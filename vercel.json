@@ -7,14 +7,14 @@
     },
     {
       "src": "/FreeFire_API_Documentation.pdf",
-      "dest": "/public/FreeFire_API_Documentation.pdf"
+      "dest": "/FreeFire_API_Documentation.pdf"
     },
     {
       "handle": "filesystem"
     },
     {
       "src": "/",
-      "dest": "/public/index.html"
+      "dest": "/index.html"
     }
   ]
 }
