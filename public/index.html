@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<title>Free Fire Player Info API - Official Documentation</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap');
+
+    @page {
+        size: A4;
+        margin: 20mm 15mm 20mm 15mm;
+        @bottom-right {
+            content: "Page " counter(page);
+            font-family: 'Inter', sans-serif;
+            font-size: 9pt;
+            color: #718096;
+        }
+    }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        color: #1a202c;
+        background: #ffffff;
+        line-height: 1.6;
+        font-size: 10.5pt;
+    }
+
+    .cover {
+        padding: 40px 0 30px 0;
+        border-bottom: 2px solid #e2e8f0;
+        margin-bottom: 30px;
+    }
+
+    .badge-bar {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 15px;
+    }
+
+    .badge {
+        display: inline-block;
+        font-size: 8pt;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 4px 10px;
+        border-radius: 6px;
+    }
+
+    .badge-primary { background: #ebf8ff; color: #2b6cb0; border: 1px solid #bee3f8; }
+    .badge-success { background: #f0fff4; color: #276749; border: 1px solid #c6f6d5; }
+    .badge-warning { background: #fffaf0; color: #c05621; border: 1px solid #feebc8; }
+
+    h1 {
+        font-size: 24pt;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1.2;
+        margin-bottom: 8px;
+    }
+
+    .subtitle {
+        font-size: 12pt;
+        color: #64748b;
+        margin-bottom: 15px;
+    }
+
+    .meta-box {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 12px 18px;
+        font-size: 9pt;
+        margin-top: 15px;
+    }
+
+    .meta-item strong {
+        display: block;
+        color: #475569;
+        font-size: 8pt;
+        text-transform: uppercase;
+    }
+
+    .meta-item span {
+        color: #0f172a;
+        font-weight: 600;
+        font-size: 9.5pt;
+    }
+
+    h2 {
+        font-size: 14pt;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 28px 0 12px 0;
+        padding-bottom: 6px;
+        border-bottom: 1.5px solid #e2e8f0;
+        page-break-after: avoid;
+    }
+
+    h3 {
+        font-size: 11pt;
+        font-weight: 600;
+        color: #1e293b;
+        margin: 18px 0 8px 0;
+        page-break-after: avoid;
+    }
+
+    p {
+        margin-bottom: 10px;
+        color: #334155;
+    }
+
+    ul, ol {
+        margin-left: 20px;
+        margin-bottom: 12px;
+        color: #334155;
+    }
+
+    li {
+        margin-bottom: 4px;
+    }
+
+    .endpoint-box {
+        background: #0f172a;
+        color: #f8fafc;
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-family: 'Fira Code', monospace;
+        font-size: 10pt;
+        margin: 12px 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .method {
+        background: #10b981;
+        color: #ffffff;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 8pt;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 14px 0;
+        font-size: 9pt;
+        page-break-inside: avoid;
+    }
+
+    th, td {
+        padding: 8px 12px;
+        text-align: left;
+        border: 1px solid #e2e8f0;
+    }
+
+    th {
+        background: #f1f5f9;
+        color: #334155;
+        font-weight: 700;
+        font-size: 8.5pt;
+        text-transform: uppercase;
+    }
+
+    tr:nth-child(even) td {
+        background: #f8fafc;
+    }
+
+    code {
+        font-family: 'Fira Code', monospace;
+        background: #f1f5f9;
+        color: #e11d48;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 8.5pt;
+    }
+
+    pre {
+        background: #0f172a;
+        color: #e2e8f0;
+        padding: 14px;
+        border-radius: 8px;
+        font-family: 'Fira Code', monospace;
+        font-size: 8pt;
+        overflow-x: auto;
+        margin: 12px 0;
+        line-height: 1.45;
+        page-break-inside: avoid;
+    }
+
+    pre code {
+        background: transparent;
+        color: inherit;
+        padding: 0;
+    }
+
+    .callout {
+        background: #f0fdf4;
+        border-left: 4px solid #22c55e;
+        padding: 12px 16px;
+        border-radius: 0 8px 8px 0;
+        margin: 14px 0;
+        font-size: 9.5pt;
+    }
+
+    .callout-warning {
+        background: #fffbeb;
+        border-left-color: #f59e0b;
+    }
+
+    .callout strong {
+        color: #0f172a;
+    }
+
+    .page-break {
+        page-break-before: always;
+    }
+
+    .footer-note {
+        margin-top: 30px;
+        padding-top: 15px;
+        border-top: 1px solid #e2e8f0;
+        text-align: center;
+        font-size: 8.5pt;
+        color: #94a3b8;
+    }
+</style>
+</head>
+<body>
+
+<div class="cover">
+    <div class="badge-bar">
+        <span class="badge badge-success">100% Direct Official Garena Protocol</span>
+        <span class="badge badge-primary">Vercel Serverless Edge</span>
+        <span class="badge badge-warning">Zero 3rd-Party Relay</span>
+    </div>
+    <h1>Free Fire Player Info API</h1>
+    <div class="subtitle">অফিসিয়াল টেকনিক্যাল ডকুমেন্টেশন ও ইন্টিগ্রেশন গাইডলাইন</div>
+
+    <div class="meta-box">
+        <div class="meta-item">
+            <strong>Base URL</strong>
+            <span>https://my-ff-api-three.vercel.app</span>
+        </div>
+        <div class="meta-item">
+            <strong>Engine</strong>
+            <span>Garena Game Gateway (Protobuf)</span>
+        </div>
+        <div class="meta-item">
+            <strong>Edge Caching</strong>
+            <span>300s (5 Min Worldwide CDN)</span>
+        </div>
+    </div>
+    <div style="margin-top: 15px;">
+        <a href="/FreeFire_API_Documentation.pdf" download style="display: inline-flex; align-items: center; gap: 8px; background: #e11d48; color: #ffffff; padding: 8px 18px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 10pt; box-shadow: 0 2px 4px rgba(225,29,72,0.2);">
+            📄 Download Official Documentation (PDF)
+        </a>
+    </div>
+</div>
+
+<h2>১. সিস্টেম পরিচিতি (Overview)</h2>
+<p>
+এই API-টি একটি উচ্চ ক্ষমতাসম্পন্ন <strong>Serverless RESTful Free Fire Player Information API</strong>। এটি কোনো মধ্যস্থতাকারী (Third-party) ওয়েবসাইটের ওপর নির্ভর না করে সরাসরি <strong>Garena Free Fire Official Game Server</strong> এর সাথে প্রোটোকল বাফার (Protobuf) ও AES এনক্রিপশনের মাধ্যমে যোগাযোগ করে। ফলে যেকোনো ফ্রি ফায়ার প্লেয়ারের ইন-গেম নাম, লেভেল, লাইক, র্যাঙ্ক, অ্যাভাটার, ব্যানার, পোশাক, পেট এবং ব্যাটল স্ট্যাটস নিখুঁতভাবে রিয়েল-টাইমে পাওয়া যায়।
+</p>
+
+<div class="callout">
+    <strong>নিরাপত্তা ও প্রাইভেসি:</strong> এই API-তে কোনো ধরনের ইন্টারনাল বট তথ্য (যেমন Bot UID) পাবলিক রেসপন্সে প্রকাশ করা হয় না। এটি ১০০% প্রোডাকশন-রেডি ও ক্লিন JSON আউটপুট প্রদান করে।
+</div>
+
+<h2>২. এন্ডপয়েন্ট ও মেথড (Endpoint Specification)</h2>
+
+<div class="endpoint-box">
+    <span class="method">GET</span>
+    <span>https://my-ff-api-three.vercel.app/api/player-info</span>
+</div>
+
+<h3>রিকোয়েস্ট কুয়েরি প্যারামিটারস:</h3>
+<table>
+    <thead>
+        <tr>
+            <th>প্যারামিটার</th>
+            <th>টাইপ</th>
+            <th>আবশ্যক?</th>
+            <th>ডিফল্ট</th>
+            <th>বিবরণ</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>uid</code> বা <code>id</code></td>
+            <td>String / Number</td>
+            <td><strong>হ্যাঁ</strong></td>
+            <td>—</td>
+            <td>টার্গেট ফ্রি ফায়ার প্লেয়ারের ইন-গেম UID (যেমন: <code>3000391898</code>)</td>
+        </tr>
+        <tr>
+            <td><code>region</code></td>
+            <td>String</td>
+            <td>না</td>
+            <td><code>BD</code></td>
+            <td>প্লেয়ারের সার্ভার রিজিয়ন (যেমন: <code>BD</code>, <code>IND</code>, <code>SG</code>, <code>BR</code>, <code>US</code>)</td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="page-break"></div>
+
+<h2>৩. সম্পূর্ণ রেসপন্স ডেটা ফরম্যাট (JSON Schema)</h2>
+<p>যেকোনো সফল রিকোয়েস্টে HTTP <code>200 OK</code> সহ নিচের মতো পূর্ণাঙ্গ ডেটা রিটার্ন হয়:</p>
+
+<pre><code>{
+  "success": true,
+  "data": {
+    "AccountInfo": {
+      "AccountName": "ᶜᵉᵒ〆FLEX™",
+      "AccountLevel": 70,
+      "AccountEXP": 2860195,
+      "AccountRegion": "BD",
+      "AccountLikes": 9163,
+      "AccountCreateTime": "1617791209",
+      "AccountLastLogin": "1788325315",
+      "AccountSeasonId": null
+    },
+    "AccountProfileInfo": {
+      "BrMaxRank": 0,
+      "BrRankPoint": 0,
+      "CsMaxRank": 0,
+      "CsRankPoint": 0,
+      "ShowBrRank": true,
+      "ShowCsRank": true
+    },
+    "EquippedItemsInfo": {
+      "EquippedAvatarId": 3,
+      "EquippedBannerId": 901042013,
+      "EquippedBPID": 1001000099,
+      "EquippedBPBadges": 111,
+      "EquippedOutfit": [ 50 ],
+      "EquippedWeapon": [ ],
+      "EquippedSkills": [ 211046056, 203046064, 204051038, 205000225, 214039008 ]
+    },
+    "SocialInfo": {
+      "accountId": "3000391898",
+      "gender": "GENDERMALE",
+      "language": "LANGUAGECNTRADITIONAL",
+      "signature": "[b][c][FF0000]know your place f.o.o.l",
+      "rankShow": "RANKSHOWBR"
+    },
+    "CreditScoreInfo": {
+      "creditScore": 100,
+      "rewardState": "REWARDSTATEUNCLAIMED"
+    },
+    "GuildInfo": {
+      "GuildID": "None",
+      "GuildName": null,
+      "GuildLevel": null
+    },
+    "PetInfo": {
+      "id": 1300000123,
+      "level": 4,
+      "exp": 540,
+      "name": "",
+      "skinId": 1310000235,
+      "selectedSkillId": 1315000011
+    },
+    "BattleStats": {
+      "solostats": {
+        "gamesplayed": 1331,
+        "wins": 24,
+        "kills": 1905,
+        "detailedstats": { "headshots": 820, "damage": 587364, ... }
+      },
+      "duostats": { "gamesplayed": 1381, "wins": 62, "kills": 1604, ... },
+      "quadstats": { "gamesplayed": 2942, "wins": 226, "kills": 4517, ... }
+    }
+  }
+}</code></pre>
+
+<h2>৪. ফিল্ড ডিকশনারি (Field Descriptions)</h2>
+<ul>
+    <li><code>AccountInfo.AccountName</code>: প্লেয়ারের বর্তমান ইন-গেম ডিসপ্লে নেম (স্টাইলিশ ফন্ট ও ইউনিকোড সাপোর্ট করে)।</li>
+    <li><code>AccountInfo.AccountLevel</code>: প্লেয়ারের বর্তমান গেম লেভেল।</li>
+    <li><code>AccountInfo.AccountLikes</code>: মোট সংগৃহীত প্রোফাইল লাইক সংখ্যা।</li>
+    <li><code>AccountInfo.AccountEXP</code>: প্লেয়ারের সংগৃহীত মোট এক্সপেরিয়েন্স পয়েন্ট।</li>
+    <li><code>SocialInfo.signature</code>: প্লেয়ারের ইন-গেম বায়ো বা সিগনেচার।</li>
+    <li><code>BattleStats</code>: সলো, ডুও এবং স্কোয়াডে মোট খেলা ম্যাচ, জয়, কিল, ড্যামেজ ও হেডশটের সংখ্যা।</li>
+</ul>
+
+<div class="page-break"></div>
+
+<h2>৫. অ্যাভাটার ও ব্যানার ছবি ফেচ করার নিয়ম</h2>
+<p>API থেকে পাওয়া <code>EquippedAvatarId</code> বা <code>EquippedBannerId</code> দিয়ে সরাসরি গেমের আসল ছবি লোড করা যায়:</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>আইটেম</th>
+            <th>CDN লিঙ্ক ফরম্যাট</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>অরিজিনাল অ্যাভাটার</strong></td>
+            <td><code>https://cdn.jsdelivr.net/gh/TSun-FreeFire/TSun-FF-Avatar-And-Banners@main/icons/{AvatarId}.png</code></td>
+        </tr>
+        <tr>
+            <td><strong>অরিজিনাল ব্যানার</strong></td>
+            <td><code>https://cdn.jsdelivr.net/gh/TSun-FreeFire/TSun-FF-Avatar-And-Banners@main/icons/{BannerId}.png</code></td>
+        </tr>
+    </tbody>
+</table>
+
+<h2>৬. ইন্টিগ্রেশন কোড উদাহরণ (Integration Code)</h2>
+
+<h3>JavaScript (Web / Node.js)</h3>
+<pre><code>const uid = "3000391898";
+fetch(`https://my-ff-api-three.vercel.app/api/player-info?uid=${uid}`)
+  .then(res => res.json())
+  .then(json => {
+    if (json.success) {
+      console.log("Name:", json.data.AccountInfo.AccountName);
+      console.log("Level:", json.data.AccountInfo.AccountLevel);
+      console.log("Likes:", json.data.AccountInfo.AccountLikes);
+    }
+  });</code></pre>
+
+<h3>Python</h3>
+<pre><code>import requests
+
+url = "https://my-ff-api-three.vercel.app/api/player-info?uid=3000391898"
+data = requests.get(url).json()
+
+if data.get("success"):
+    player = data["data"]["AccountInfo"]
+    print(f"Player: {player['AccountName']} | Lv: {player['AccountLevel']}")</code></pre>
+
+<h3>PHP</h3>
+<pre><code>&lt;?php
+$uid = "3000391898";
+$url = "https://my-ff-api-three.vercel.app/api/player-info?uid=" . urlencode($uid);
+$response = file_get_contents($url);
+$result = json_decode($response, true);
+
+if (!empty($result['success'])) {
+    echo "Player: " . $result['data']['AccountInfo']['AccountName'];
+}
+?&gt;</code></pre>
+
+<h2>৭. বট অ্যাকাউন্ট পরিবর্তন করার নিয়ম (Maintenance)</h2>
+<p>ভবিষ্যতে কখনো নতুন গেস্ট অ্যাকাউন্ট বসাতে চাইলে <code>ff-api/api/player-info.js</code> ফাইলের ৩ ও ৪ নম্বর লাইনে আপনার নতুন গেস্ট UID ও Password বসিয়ে GitHub-এ পুশ করলেই Vercel স্বয়ংক্রিয়ভাবে আপডেট হয়ে যাবে।</p>
+
+<div class="footer-note">
+    Free Fire Player Info API &bull; Built with Node.js &amp; Vercel &bull; Document Generated on 2026-09-02
+</div>
+
+</body>
+</html>

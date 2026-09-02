@@ -6,8 +6,15 @@
       "dest": "/api/player-info.js"
     },
     {
-      "src": "/(.*)",
-      "dest": "/api/player-info.js"
+      "src": "/FreeFire_API_Documentation.pdf",
+      "dest": "/public/FreeFire_API_Documentation.pdf"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/",
+      "dest": "/public/index.html"
     }
   ]
 }
