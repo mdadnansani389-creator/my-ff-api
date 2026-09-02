@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "routes": [
+    {
+      "src": "/api/player-info",
+      "dest": "/api/player-info.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/api/player-info.js"
+    }
+  ]
+}
