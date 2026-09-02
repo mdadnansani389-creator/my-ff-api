@@ -145,6 +145,11 @@ module.exports = async (req, res) => {
             skillIds = profile.profileinfo.equipedskills;
         }
 
+        const nowSec = Math.floor(Date.now() / 1000);
+        const lastLoginSec = b.lastloginat ? Number(b.lastloginat) : 0;
+        const diffSeconds = lastLoginSec > 0 ? (nowSec - lastLoginSec) : null;
+        const isOnline = diffSeconds !== null && diffSeconds >= 0 && diffSeconds <= 900;
+
         const formattedData = {
             AccountInfo: {
                 AccountName: b.nickname || 'Unknown Player',
@@ -154,6 +159,8 @@ module.exports = async (req, res) => {
                 AccountLikes: b.liked || 0,
                 AccountCreateTime: b.createat ? String(b.createat) : null,
                 AccountLastLogin: b.lastloginat ? String(b.lastloginat) : null,
+                IsOnline: isOnline,
+                LastLoginDiffSeconds: diffSeconds,
                 AccountSeasonId: null
             },
             AccountProfileInfo: {
@@ -178,14 +185,14 @@ module.exports = async (req, res) => {
                 gender: s.gender || 'GENDERMALE',
                 language: s.language || 'LANGUAGECNTRADITIONAL',
                 signature: s.signature || null,
-                rankShow: s.rankshow || 'RANKSHOWBR'
+                rankShow: 'RANKSHOWBR'
             },
             CreditScoreInfo: {
                 creditScore: cs.creditscore || 100,
                 rewardState: cs.rewardstate || 'REWARDSTATEUNCLAIMED'
             },
             GuildInfo: {
-                GuildID: c.clanid && c.clanid !== "0" ? String(c.clanid) : "None",
+                GuildID: c.clanid || 'None',
                 GuildName: c.clanname || null,
                 GuildLevel: c.clanlevel || null,
                 GuildMember: c.membernum || null,
@@ -205,8 +212,11 @@ module.exports = async (req, res) => {
         // Record successful request in analytics
         recordRequest(true);
 
-        // Cache response for 5 minutes (300s) on Vercel CDN
-        res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
+        // ZERO CACHE: Always serve 100% fresh, live real-time Garena status
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+        res.setHeader('Surrogate-Control', 'no-store');
 
         return res.status(200).json({
             success: true,
