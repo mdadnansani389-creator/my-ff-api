@@ -171,8 +171,6 @@ module.exports = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            source: 'official_garena_game_gateway',
-            botUid: BOT_UID,
             data: formattedData
         });
 
@@ -180,7 +178,7 @@ module.exports = async (req, res) => {
         console.error("Garena Direct Gateway Error:", error);
         return res.status(500).json({
             success: false,
-            message: 'Direct Garena connection error: ' + (error.message || 'Unknown error')
+            message: 'Unable to fetch player profile at this moment.'
         });
     }
 };
