@@ -29,5 +29,5 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
     console.log(`[+] Server running at: http://localhost:${PORT}`);
     console.log(`[+] Admin Dashboard: http://localhost:${PORT}/admin`);
-    console.log(`[i] Test Lookup: http://localhost:${PORT}/api/player-info?uid=3000391898`);
+    console.log(`[i] Test Lookup: http://localhost:${PORT}/api/player-info?uid=YOUR_UID`);
 });

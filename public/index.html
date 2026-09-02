@@ -266,9 +266,9 @@
         <a href="/FreeFire_API_Documentation.pdf" download style="display: inline-flex; align-items: center; gap: 8px; background: #e11d48; color: #ffffff; padding: 9px 18px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 10pt; box-shadow: 0 2px 4px rgba(225,29,72,0.2);">
             📄 Download Official Documentation (PDF)
         </a>
-        <a href="https://my-ff-api-three.vercel.app/api/player-info?uid=3000391898" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; background: #2563eb; color: #ffffff; padding: 9px 18px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 10pt; box-shadow: 0 2px 4px rgba(37,99,235,0.2);">
-            ⚡ Open Live Working Test URL
-        </a>
+        <button id="askUidBtn" style="display: inline-flex; align-items: center; gap: 8px; background: #2563eb; color: #ffffff; padding: 9px 18px; border-radius: 8px; border: none; font-weight: 700; font-size: 10pt; cursor: pointer; box-shadow: 0 2px 4px rgba(37,99,235,0.2);">
+            ⚡ Test With Custom UID
+        </button>
     </div>
 </div>
 
@@ -283,7 +283,7 @@
     </div>
 
     <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px;">
-        <input type="text" id="playUid" value="3000391898" placeholder="Enter any Free Fire UID" style="flex: 1; min-width: 220px; padding: 10px 14px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-family: monospace; font-size: 10pt; outline: none;">
+        <input type="text" id="playUid" value="" placeholder="Type or paste any Free Fire UID here..." style="flex: 1; min-width: 220px; padding: 10px 14px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-family: monospace; font-size: 10pt; outline: none;">
         <select id="playRegion" style="padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 9.5pt; background: #fff; outline: none;">
             <option value="BD">Region: BD (Bangladesh)</option>
             <option value="IND">Region: IND (India)</option>
@@ -298,9 +298,9 @@
 
     <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
         <div style="font-size: 9pt; color: #64748b; font-family: monospace; word-break: break-all;">
-            <strong style="color: #059669;">GET</strong> <a id="playLink" href="https://my-ff-api-three.vercel.app/api/player-info?uid=3000391898" target="_blank" style="color: #2563eb; text-decoration: underline; font-weight: 600;">https://my-ff-api-three.vercel.app/api/player-info?uid=3000391898</a>
+            <strong style="color: #059669;">GET</strong> <a id="playLink" href="https://my-ff-api-three.vercel.app/api/player-info?uid=YOUR_UID" target="_blank" style="color: #2563eb; text-decoration: underline; font-weight: 600;">https://my-ff-api-three.vercel.app/api/player-info?uid=YOUR_UID</a>
         </div>
-        <a id="playOpenBtn" href="https://my-ff-api-three.vercel.app/api/player-info?uid=3000391898" target="_blank" style="font-size: 8.5pt; font-weight: 700; color: #2563eb; background: #eff6ff; padding: 4px 10px; border-radius: 6px; text-decoration: none; border: 1px solid #bfdbfe;">
+        <a id="playOpenBtn" href="https://my-ff-api-three.vercel.app/api/player-info?uid=YOUR_UID" target="_blank" style="font-size: 8.5pt; font-weight: 700; color: #2563eb; background: #eff6ff; padding: 4px 10px; border-radius: 6px; text-decoration: none; border: 1px solid #bfdbfe;">
             Open URL ↗
         </a>
     </div>
@@ -513,8 +513,20 @@ if (!empty($result['success'])) {
     const playStatus = document.getElementById('playStatus');
     const playPre = document.getElementById('playPre');
 
+    const askUidBtn = document.getElementById('askUidBtn');
+    if(askUidBtn){
+        askUidBtn.addEventListener('click', function(){
+            const customUid = prompt("Enter any Free Fire Player UID to test:");
+            if(customUid && /^\d+$/.test(customUid.trim())){
+                window.open(`https://my-ff-api-three.vercel.app/api/player-info?uid=${customUid.trim()}`, '_blank');
+            } else if(customUid !== null) {
+                alert("Please enter a valid numeric UID.");
+            }
+        });
+    }
+
     function updateUrl(){
-        const uid = playUid.value.trim() || '3000391898';
+        const uid = playUid.value.trim() || 'YOUR_UID';
         const reg = playRegion.value;
         const fullUrl = `https://my-ff-api-three.vercel.app/api/player-info?uid=${encodeURIComponent(uid)}` + (reg && reg !== 'AUTO' ? `&region=${encodeURIComponent(reg)}` : '');
         playLink.textContent = fullUrl;
