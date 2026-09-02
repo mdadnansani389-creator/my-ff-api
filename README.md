@@ -1,64 +1,68 @@
-# Free Fire Custom Player Info API (Node.js & Vercel)
+# 🎮 Free Fire Player Info Custom API (Node.js & Vercel)
 
-এই প্রজেক্টটি একটি কাস্টম Free Fire API যা গ্যারেনা গেটওয়ে ও প্রোটোবাফ ব্যবহার করে যেকোনো প্লেয়ারের প্রোফাইল ডেটা (নাম, লেভেল, লাইক, র‍্যাঙ্ক, ব্যানার, অ্যাভাটার ইত্যাদি) ফেচ করে দেয়।
+[![Live API](https://img.shields.io/badge/API-Live%20on%20Vercel-success?style=for-the-badge&logo=vercel)](https://my-ff-api-three.vercel.app/api/player-info?uid=3000391898)
+[![Node.js](https://img.shields.io/badge/Node.js-18%2B-green?style=for-the-badge&logo=node.js)](https://nodejs.org/)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
+
+একটি উচ্চগতির ও আধুনিক **Free Fire Player Info REST API** যা গ্যারেনার অফিসিয়াল গেটওয়ে ও প্রোটোবাফ আর্কিটেকচার থেকে রিয়েল-টাইমে প্লেয়ারের সম্পূর্ণ প্রোফাইল ডেটা (নাম, লেভেল, লাইক, র্যাঙ্ক, অ্যাভাটার, ব্যানার, বায়ো ইত্যাদি) ফেচ করে দেয়।
 
 ---
 
-## ১. লোকালি কীভাবে টেস্ট করবেন (Local Testing)
+## 🌐 লাইভ এন্ডপয়েন্ট (Live Endpoint)
 
-১. টার্মিনালে `ff-api` ফোল্ডারে ঢুকুন:
-```bash
-cd c:\Users\user\Desktop\FFBIO\ff-api
+```http
+GET https://my-ff-api-three.vercel.app/api/player-info?uid=YOUR_UID&region=BD
 ```
 
-২. ডিপেন্ডেন্সি ইনস্টল করুন:
+> 📖 **সম্পূর্ণ ডকুমেন্টেশন ও কোড উদাহরণের জন্য [API_DOCUMENTATION.md](API_DOCUMENTATION.md) ফাইলটি দেখুন।**
+
+---
+
+## 🚀 কুইক স্টার্ট (Quick Start)
+
+### ব্রাউজারে টেস্ট লিংক:
+[https://my-ff-api-three.vercel.app/api/player-info?uid=3000391898&region=BD](https://my-ff-api-three.vercel.app/api/player-info?uid=3000391898&region=BD)
+
+### JavaScript দিয়ে ডেটা ফেচ:
+```javascript
+fetch("https://my-ff-api-three.vercel.app/api/player-info?uid=3000391898")
+  .then(res => res.json())
+  .then(data => console.log(data));
+```
+
+### Python দিয়ে ডেটা ফেচ:
+```python
+import requests
+res = requests.get("https://my-ff-api-three.vercel.app/api/player-info?uid=3000391898")
+print(res.json())
+```
+
+---
+
+## 💻 লোকালি চালানোর নিয়ম (Local Setup)
+
 ```bash
+# ১. রিপোজিটরি ক্লোন করুন
+git clone https://github.com/mdadnansani389-creator/my-ff-api.git
+cd my-ff-api
+
+# ২. প্যাকেজ ইনস্টল করুন
 npm install
-```
 
-৩. সার্ভার চালু করুন:
-```bash
+# ৩. লোকাল সার্ভার রান করুন
 node server.js
 ```
 সার্ভারটি `http://localhost:3000`-এ চালু হবে।
 
-৪. ব্রাউজারে টেস্ট করুন:
-```
-http://localhost:3000/api/player-info?uid=3000391898
-```
-
 ---
 
-## ২. Vercel-এ ফ্রিতে ডিপ্লয় করার নিয়ম (Free Vercel Deployment)
-
-### পদ্ধতি A: GitHub দিয়ে (সবচেয়ে সহজ)
-1. **GitHub Repository তৈরি করুন**:
-   - [github.com](https://github.com)-এ গিয়ে একটি নতুন Repository তৈরি করুন (যেমন: `my-ff-api`)।
-   - `ff-api` ফোল্ডারের কোডটুকু সেখানে পুশ করুন:
-     ```bash
-     cd c:\Users\user\Desktop\FFBIO\ff-api
-     git init
-     git add .
-     git commit -m "Initial commit"
-     git branch -M main
-     git remote add origin https://github.com/YOUR_USERNAME/my-ff-api.git
-     git push -u origin main
-     ```
-2. **Vercel-এ ডিপ্লয় করুন**:
-   - [vercel.com](https://vercel.com)-এ গিয়ে আপনার GitHub একাউন্ট দিয়ে লগইন করুন।
-   - **"Add New..."** ➔ **"Project"**-এ ক্লিক করুন।
-   - আপনার `my-ff-api` রিপোজিটরিটি সিলেক্ট করে **"Deploy"** বাটনে ক্লিক করুন।
-3. **লাইভ URL পাওয়া**:
-   - Vercel আপনাকে একটি ফ্রি লিঙ্ক দেবে, যেমন:
-     `https://my-ff-api.vercel.app/api/player-info?uid=3000391898`
-
----
-
-## ৩. আপনার PHP ওয়েবসাইটে এই API কানেক্ট করা
-
-আপনার ওয়েবসাইটের `index.php` ফাইলের শুরুতে `$apiBase` লাইনে আপনার নতুন Vercel লিংকটি বসিয়ে দিন:
-
-```php
-$apiBase = "https://my-ff-api.vercel.app/api/player-info";
+## ⚙️ প্রজেক্ট স্ট্রাকচার (Project Structure)
 ```
-এখন আপনার ওয়েবসাইট সম্পূর্ণ আপনার নিজস্ব Vercel API থেকে আনলিমিটেড স্পিডে চলবে!
+├── api/
+│   └── player-info.js       # Vercel Serverless Function (Primary API)
+├── vercel.json              # Vercel রুট কনফিগারেশন
+├── server.js                # লোকাল এক্সপ্রেস সার্ভার
+├── package.json             # ডিপেন্ডেন্সি লিস্ট
+├── API_DOCUMENTATION.md     # পূর্ণাঙ্গ API ডকুমেন্টেশন
+└── README.md                # প্রজেক্ট পরিচিতি
+```
