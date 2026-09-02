@@ -1,6 +1,23 @@
+const path = require('path');
+const protobuf = require('protobufjs');
 const FreeFireAPI = require('@pure0cd/freefire-api');
+const protoHandler = require('@pure0cd/freefire-api/lib/protobuf');
 const storage = require('../lib/storage');
 const { recordRequest } = require('../lib/stats');
+
+// Preload enhanced PlayerPersonalShow proto with dynamic bannerid and headpic (avatar)
+const customProtoPath = path.join(__dirname, '../proto/PlayerPersonalShow.proto');
+let customProtoLoaded = false;
+async function ensureCustomProto() {
+    if (!customProtoLoaded) {
+        try {
+            protoHandler.roots['PlayerPersonalShow.proto'] = await protobuf.load(customProtoPath);
+            customProtoLoaded = true;
+        } catch (e) {
+            console.warn('[!] Failed to preload custom proto:', e.message);
+        }
+    }
+}
 
 // Client pool cache: botUid -> { client, lastLogin }
 const clientPool = new Map();
@@ -10,6 +27,7 @@ let roundRobinIndex = 0;
  * Get or authenticate a client for a specific bot
  */
 async function getClientForBot(bot) {
+    await ensureCustomProto();
     const now = Date.now();
     let entry = clientPool.get(bot.uid);
     if (!entry || now - entry.lastLogin > 1000 * 60 * 60 * 6) {
@@ -24,6 +42,7 @@ async function getClientForBot(bot) {
 }
 
 module.exports = async (req, res) => {
+    await ensureCustomProto();
     // Enable CORS
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -135,18 +154,18 @@ module.exports = async (req, res) => {
                 AccountSeasonId: null
             },
             AccountProfileInfo: {
-                BrMaxRank: b.rank || 0,
+                BrMaxRank: b.maxrank || b.rank || 0,
                 BrRankPoint: b.rankingpoints || 0,
-                CsMaxRank: b.csrank || 0,
+                CsMaxRank: b.csmaxrank || b.csrank || 0,
                 CsRankPoint: b.csrankingpoints || 0,
                 ShowBrRank: true,
                 ShowCsRank: true
             },
             EquippedItemsInfo: {
-                EquippedAvatarId: profile.profileinfo ? (profile.profileinfo.avatarid || 902050007) : 902050007,
-                EquippedBannerId: 901042013,
-                EquippedBPID: latestEp.epbadge || 1001000100,
-                EquippedBPBadges: latestEp.badgecnt || 0,
+                EquippedAvatarId: b.headpic || (profile.profileinfo && profile.profileinfo.avatarid) || 902050007,
+                EquippedBannerId: b.bannerid || 901042013,
+                EquippedBPID: b.badgeid || latestEp.epbadge || 1001000100,
+                EquippedBPBadges: b.badgecnt || latestEp.badgecnt || 0,
                 EquippedOutfit: outfitIds,
                 EquippedWeapon: weaponIds,
                 EquippedSkills: skillIds
