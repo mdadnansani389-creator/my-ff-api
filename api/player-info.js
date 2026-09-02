@@ -94,8 +94,8 @@ module.exports = async (req, res) => {
     const cleanUid = String(uid).trim();
 
     try {
-        // 1. Try Protobuf Full Stats via Garena Game Gateway
-        if (FreeFireAPI) {
+        // 1. Try Protobuf Full Stats via Garena Game Gateway if Bot credentials provided
+        if (FreeFireAPI && process.env.BOT_UID && process.env.BOT_PASSWORD) {
             try {
                 const client = await getClient();
                 const profile = await client.getPlayerProfile(cleanUid);
@@ -148,22 +148,47 @@ module.exports = async (req, res) => {
                         }
                     };
 
+                    res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
                     return res.status(200).json({
                         success: true,
-                        source: 'garena_gateway',
+                        source: 'private_garena_gateway',
                         data: formattedData
                     });
                 }
             } catch (err) {
-                console.error("Garena Gateway Lookup Error:", err.message);
-                // Reset client session on failure to re-login next time
+                console.error("Direct Gateway lookup error:", err.message);
                 ffClient = null;
             }
         }
 
-        // 2. Fallback to Garena Topup if Gateway didn't respond
+        // 2. High-speed Garena Gateway Relay with Edge Caching
+        try {
+            const gatewayUrl = `https://api.gameskinbo.com/ff-info/get?uid=${encodeURIComponent(cleanUid)}` + (region && region !== 'AUTO' ? `&region=${encodeURIComponent(region)}` : '');
+            const gRes = await axios.get(gatewayUrl, {
+                headers: {
+                    'x-api-key': 'y_n6Sg5yqZPIX3cQTNP-VFg3AgrhID8CXbcOg5Mo2qA',
+                    'Accept': 'application/json',
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
+                },
+                timeout: 12000
+            });
+
+            if (gRes.data && (gRes.data.AccountInfo || gRes.data.basicInfo)) {
+                res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
+                return res.status(200).json({
+                    success: true,
+                    source: 'cloud_edge_gateway',
+                    data: gRes.data
+                });
+            }
+        } catch (relayErr) {
+            console.error("Relay gateway error:", relayErr.message);
+        }
+
+        // 3. Fallback to Garena Topup validation
         const topupData = await fetchFromGarenaTopup(cleanUid);
         if (topupData) {
+            res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
             return res.status(200).json({
                 success: true,
                 source: 'garena_topup',
@@ -173,7 +198,7 @@ module.exports = async (req, res) => {
 
         return res.status(404).json({
             success: false,
-            message: 'Player not found or Garena server did not return data.'
+            message: 'Player not found or Garena servers did not return profile data.'
         });
 
     } catch (error) {
