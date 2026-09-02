@@ -2,12 +2,8 @@
   "version": 2,
   "routes": [
     {
-      "src": "/api/player-info",
-      "dest": "/api/player-info.js"
-    },
-    {
-      "src": "/api/admin",
-      "dest": "/api/admin.js"
+      "src": "/api/(.*)",
+      "dest": "/api/index.js"
     },
     {
       "src": "/admin",
