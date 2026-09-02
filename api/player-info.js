@@ -1,33 +1,6 @@
-const fs = require('fs');
-const path = require('path');
 const FreeFireAPI = require('@pure0cd/freefire-api');
+const storage = require('../lib/storage');
 const { recordRequest } = require('../lib/stats');
-
-const BOTS_FILE = path.join(process.cwd(), 'bots.json');
-
-const DEFAULT_BOTS = [
-    {
-        id: "bot_1",
-        uid: process.env.BOT_UID || "7403290144",
-        password: process.env.BOT_PASSWORD || "10FA10F1D5D1694D64518D7F6CB8CE92720C5F34B33BAC77E2C440ADE6977913",
-        status: "active"
-    }
-];
-
-function getActiveBots() {
-    try {
-        if (fs.existsSync(BOTS_FILE)) {
-            const data = JSON.parse(fs.readFileSync(BOTS_FILE, 'utf-8'));
-            if (Array.isArray(data) && data.length > 0) {
-                const active = data.filter(b => b.status !== 'disabled');
-                if (active.length > 0) return active;
-            }
-        }
-    } catch (e) {
-        console.error("Error loading bots.json:", e.message);
-    }
-    return DEFAULT_BOTS;
-}
 
 // Client pool cache: botUid -> { client, lastLogin }
 const clientPool = new Map();
@@ -77,7 +50,7 @@ module.exports = async (req, res) => {
     const cleanUid = String(uid).trim();
 
     try {
-        const bots = getActiveBots();
+        const bots = await storage.getActiveBots();
         let profile = null;
         let successfulClient = null;
         let lastError = null;

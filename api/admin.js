@@ -1,46 +1,7 @@
-const fs = require('fs');
-const path = require('path');
 const axios = require('axios');
-const { getStats } = require('../lib/stats');
+const storage = require('../lib/storage');
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "ffmax69";
-const BOTS_FILE = path.join(process.cwd(), 'bots.json');
-
-// Memory cache for bots in serverless environment
-let inMemoryBots = null;
-
-function loadBots() {
-    if (inMemoryBots) return inMemoryBots;
-    try {
-        if (fs.existsSync(BOTS_FILE)) {
-            const data = fs.readFileSync(BOTS_FILE, 'utf-8');
-            inMemoryBots = JSON.parse(data);
-            return inMemoryBots;
-        }
-    } catch (e) {
-        console.error("Error reading bots.json:", e.message);
-    }
-    inMemoryBots = [
-        {
-            id: "bot_1",
-            uid: "7403290144",
-            password: "10FA10F1D5D1694D64518D7F6CB8CE92720C5F34B33BAC77E2C440ADE6977913",
-            label: "Primary Guest Bot",
-            status: "active",
-            addedAt: new Date().toISOString()
-        }
-    ];
-    return inMemoryBots;
-}
-
-function saveBots(bots) {
-    inMemoryBots = bots;
-    try {
-        fs.writeFileSync(BOTS_FILE, JSON.stringify(bots, null, 2), 'utf-8');
-    } catch (e) {
-        console.warn("Could not write to local bots.json (serverless readonly):", e.message);
-    }
-}
 
 async function testGarenaAuth(uid, password) {
     try {
@@ -124,11 +85,10 @@ module.exports = async (req, res) => {
         return res.status(401).json({ success: false, message: "Unauthorized. Please log in." });
     }
 
-    let bots = loadBots();
+    let bots = await storage.loadBots();
 
-    // Action 2: List Bots
+    // Action 2: List Bots & Stats
     if (action === 'list_bots') {
-        // Return masked passwords
         const safeBots = bots.map(b => ({
             id: b.id,
             uid: b.uid,
@@ -137,11 +97,17 @@ module.exports = async (req, res) => {
             status: b.status || 'active',
             addedAt: b.addedAt
         }));
-        const stats = getStats();
-        return res.status(200).json({ success: true, bots: safeBots, stats });
+        const stats = await storage.loadStats();
+        const storageStatus = storage.getStorageStatus();
+        return res.status(200).json({ success: true, bots: safeBots, stats, storageStatus });
     }
 
-    // Action 3: Test Bot Connection
+    // Action 3: Storage Status
+    if (action === 'storage_status') {
+        return res.status(200).json({ success: true, storageStatus: storage.getStorageStatus() });
+    }
+
+    // Action 4: Test Bot Connection
     if (action === 'test_bot') {
         const { uid, password } = req.body || {};
         if (!uid || !password) {
@@ -151,7 +117,7 @@ module.exports = async (req, res) => {
         return res.status(200).json({ success: true, testResult });
     }
 
-    // Action 4: Add New Bot
+    // Action 5: Add New Bot
     if (action === 'add_bot') {
         const { uid, password, label } = req.body || {};
         if (!uid || !password) {
@@ -185,7 +151,7 @@ module.exports = async (req, res) => {
         };
 
         bots.push(newBot);
-        saveBots(bots);
+        await storage.saveBots(bots);
 
         return res.status(200).json({
             success: true,
@@ -195,11 +161,12 @@ module.exports = async (req, res) => {
                 uid: newBot.uid,
                 label: newBot.label,
                 status: newBot.status
-            }
+            },
+            storageStatus: storage.getStorageStatus()
         });
     }
 
-    // Action 5: Delete Bot
+    // Action 6: Delete Bot
     if (action === 'delete_bot') {
         const { id } = req.body || {};
         if (!id) return res.status(400).json({ success: false, message: "Bot ID required." });
@@ -218,20 +185,45 @@ module.exports = async (req, res) => {
             return res.status(404).json({ success: false, message: "Bot not found." });
         }
 
-        saveBots(bots);
+        await storage.saveBots(bots);
         return res.status(200).json({ success: true, message: "Bot removed successfully." });
     }
 
-    // Action 6: Toggle Bot Status (active/disabled)
+    // Action 7: Toggle Bot Status (active/disabled)
     if (action === 'toggle_bot') {
         const { id } = req.body || {};
         const bot = bots.find(b => b.id === id);
         if (!bot) return res.status(404).json({ success: false, message: "Bot not found." });
 
         bot.status = bot.status === 'active' ? 'disabled' : 'active';
-        saveBots(bots);
+        await storage.saveBots(bots);
         return res.status(200).json({ success: true, status: bot.status });
+    }
+
+    // Action 8: Export Raw Bots JSON (for backup/git commit)
+    if (action === 'export_bots') {
+        return res.status(200).json({ success: true, bots });
+    }
+
+    // Action 9: Import Bots JSON (restore/sync)
+    if (action === 'import_bots') {
+        const { importedBots } = req.body || {};
+        if (!Array.isArray(importedBots) || importedBots.length === 0) {
+            return res.status(400).json({ success: false, message: "Invalid bots array provided." });
+        }
+
+        const validBots = importedBots.filter(b => b && b.uid && b.password);
+        if (validBots.length === 0) {
+            return res.status(400).json({ success: false, message: "No valid bots found in imported data." });
+        }
+
+        await storage.saveBots(validBots);
+        return res.status(200).json({
+            success: true,
+            message: `Successfully imported and activated ${validBots.length} bot(s).`
+        });
     }
 
     return res.status(400).json({ success: false, message: "Unknown action." });
 };
+

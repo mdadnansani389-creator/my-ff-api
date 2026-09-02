@@ -420,6 +420,145 @@
         border-color: rgba(255, 71, 87, 0.3);
     }
 
+    /* Storage Persistence Banner */
+    .storage-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--card-border);
+        border-radius: 16px;
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 24px;
+        backdrop-filter: blur(10px);
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+    .storage-card.persistent {
+        border-color: rgba(46, 213, 115, 0.3);
+        background: rgba(46, 213, 115, 0.04);
+    }
+    .storage-card.ephemeral {
+        border-color: rgba(255, 177, 66, 0.35);
+        background: rgba(255, 177, 66, 0.04);
+    }
+    .storage-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+    .storage-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 4px 10px;
+        border-radius: 20px;
+    }
+    .storage-badge.badge-green {
+        background: rgba(46, 213, 115, 0.2);
+        color: #2ed573;
+        border: 1px solid rgba(46, 213, 115, 0.4);
+    }
+    .storage-badge.badge-amber {
+        background: rgba(255, 177, 66, 0.2);
+        color: #ffb142;
+        border: 1px solid rgba(255, 177, 66, 0.4);
+    }
+    .storage-desc {
+        font-size: 13px;
+        color: var(--text-2);
+    }
+    .storage-desc strong {
+        color: var(--text-1);
+    }
+
+    /* Modals */
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.8);
+        backdrop-filter: blur(8px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        padding: 20px;
+    }
+    .modal-overlay.active {
+        display: flex;
+    }
+    .modal-box {
+        background: #0f172a;
+        border: 1px solid var(--card-border);
+        border-radius: 20px;
+        width: 100%;
+        max-width: 580px;
+        padding: 28px;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    .modal-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--card-border);
+    }
+    .modal-head h3 {
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .modal-close {
+        background: none;
+        border: none;
+        color: var(--text-3);
+        font-size: 20px;
+        cursor: pointer;
+    }
+    .modal-close:hover {
+        color: var(--text-1);
+    }
+    .step-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--card-border);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-bottom: 12px;
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+    }
+    .step-num {
+        background: var(--accent);
+        color: #fff;
+        font-weight: 800;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        flex-shrink: 0;
+    }
+    .step-body h4 {
+        font-size: 14px;
+        margin-bottom: 4px;
+    }
+    .step-body p {
+        font-size: 12px;
+        color: var(--text-2);
+        line-height: 1.5;
+    }
+
     /* Toast */
     #toast {
         position: fixed;
@@ -531,6 +670,21 @@
         </div>
     </div>
 
+    <!-- Storage Persistence Status Banner -->
+    <div id="storageBanner" class="storage-card ephemeral">
+        <div class="storage-left">
+            <span id="storageBadge" class="storage-badge badge-amber"><i class="fa-solid fa-triangle-exclamation"></i> Ephemeral Mode (/tmp)</span>
+            <div class="storage-desc" id="storageDesc">
+                <strong>সাময়িক মেমোরি মোড:</strong> Vercel সার্ভারলেস কন্টেইনার স্লিপ হলে ডেটা রিসেট হতে পারে। স্থায়ী ক্লাউড ডাটাবেজ ফ্রিতে ১ ক্লিকে কানেক্ট করতে পাশে চাপুন।
+            </div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <button class="btn-action" id="openSetupBtn" style="border-color: rgba(255, 177, 66, 0.4); color: #ffb142;">
+                <i class="fa-solid fa-bolt"></i> ১-মিনিটে ফ্রি Upstash কানেক্ট করুন
+            </button>
+        </div>
+    </div>
+
     <!-- Add Bot Section -->
     <div class="section-card">
         <div class="section-head">
@@ -552,9 +706,17 @@
     <div class="section-card">
         <div class="section-head">
             <h2><i class="fa-solid fa-server" style="color: #3b82f6;"></i> Registered Bot Accounts Pool</h2>
-            <button class="btn-action" id="refreshBtn">
-                <i class="fa-solid fa-rotate"></i> Refresh
-            </button>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="btn-action" id="exportBtn" title="Download bots.json to save locally">
+                    <i class="fa-solid fa-download"></i> Export bots.json
+                </button>
+                <button class="btn-action" id="importBtn" title="Import bots JSON">
+                    <i class="fa-solid fa-upload"></i> Import
+                </button>
+                <button class="btn-action" id="refreshBtn">
+                    <i class="fa-solid fa-rotate"></i> Refresh
+                </button>
+            </div>
         </div>
 
         <div class="bot-list" id="botList">
@@ -565,6 +727,63 @@
         </div>
     </div>
 </main>
+
+<!-- Setup Upstash Modal -->
+<div class="modal-overlay" id="setupModal">
+    <div class="modal-box">
+        <div class="modal-head">
+            <h3><i class="fa-solid fa-cloud-bolt" style="color: #2ed573;"></i> Vercel-এ স্থায়ী ক্লাউড ডাটাবেজ সেটআপ</h3>
+            <button class="modal-close" id="closeSetupModal">&times;</button>
+        </div>
+        <div style="margin-bottom: 16px; font-size: 13px; color: var(--text-2); line-height: 1.6;">
+            Vercel সার্ভারলেস ফ্রিতে চালানোর সময় কোন ডাটাবেজ ছাড়া ফাইল স্বয়ংক্রিয়ভাবে মুছে যায়। Vercel-এর নিজস্ব ফ্রি <strong>Upstash Redis</strong> কানেক্ট করলে বট ও রিকোয়েস্ট কাউন্ট <strong>আজীবন স্থায়ী (100% Persistent)</strong> থাকবে!
+        </div>
+        <div class="step-card">
+            <div class="step-num">১</div>
+            <div class="step-body">
+                <h4>Vercel Dashboard-এ যান</h4>
+                <p>আপনার <code>my-ff-api</code> প্রজেক্টে ঢুকে উপরের মেনু থেকে <strong>Storage</strong> ট্যাবে ক্লিক করুন।</p>
+            </div>
+        </div>
+        <div class="step-card">
+            <div class="step-num">২</div>
+            <div class="step-body">
+                <h4>Create Database চাপুন</h4>
+                <p><strong>Create Database</strong> বাটনে ক্লিক করে <strong>KV (Serverless Redis)</strong> অথবা <strong>Upstash</strong> সিলেক্ট করে Continue চাপুন।</p>
+            </div>
+        </div>
+        <div class="step-card">
+            <div class="step-num">৩</div>
+            <div class="step-body">
+                <h4>Connect to Project চাপুন</h4>
+                <p>ডাটাবেজ তৈরি হলে <strong>Connect</strong> বাটনে চাপ দিন। Vercel স্বয়ংক্রিয়ভাবে Credentials সেট করে নিবে। এরপর Vercel-এ প্রজেক্টটি একবার Redeploy দিলেই কাজ শেষ!</p>
+            </div>
+        </div>
+        <div style="text-align: right; margin-top: 20px;">
+            <button class="btn-submit" id="closeSetupModal2" style="width: auto; padding: 10px 24px; font-size: 13px;">বুঝেছি, ধন্যবাদ!</button>
+        </div>
+    </div>
+</div>
+
+<!-- Import Bots Modal -->
+<div class="modal-overlay" id="importModal">
+    <div class="modal-box">
+        <div class="modal-head">
+            <h3><i class="fa-solid fa-file-import" style="color: #3b82f6;"></i> Import Bot Accounts JSON</h3>
+            <button class="modal-close" id="closeImportModal">&times;</button>
+        </div>
+        <p style="font-size: 13px; color: var(--text-2); margin-bottom: 14px;">
+            আপনার পূর্বের ব্যাকআপ রাখা <code>bots.json</code> ফাইলের কোড নিচে পেস্ট করুন:
+        </p>
+        <textarea id="importJsonText" style="width: 100%; height: 160px; background: rgba(0,0,0,0.5); border: 1px solid var(--card-border); border-radius: 12px; color: #fff; font-family: var(--font-mono); font-size: 12px; padding: 12px; outline: none; margin-bottom: 16px; resize: vertical;" placeholder='[{"id":"bot_1","uid":"7403290144","password":"...","label":"Bot"}]'></textarea>
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button class="btn-action" id="cancelImportBtn">Cancel</button>
+            <button class="btn-submit" id="submitImportBtn" style="width: auto; padding: 10px 20px; font-size: 13px;">
+                <i class="fa-solid fa-check"></i> Import &amp; Save
+            </button>
+        </div>
+    </div>
+</div>
 
 <div id="toast"></div>
 
@@ -632,8 +851,120 @@
 
     refreshBtn.addEventListener('click', loadBotList);
 
+    // Setup Modal Controls
+    const openSetupBtn = document.getElementById('openSetupBtn');
+    const setupModal = document.getElementById('setupModal');
+    const closeSetupModal = document.getElementById('closeSetupModal');
+    const closeSetupModal2 = document.getElementById('closeSetupModal2');
+
+    if(openSetupBtn){
+        openSetupBtn.addEventListener('click', () => setupModal.classList.add('active'));
+    }
+    if(closeSetupModal){
+        closeSetupModal.addEventListener('click', () => setupModal.classList.remove('active'));
+    }
+    if(closeSetupModal2){
+        closeSetupModal2.addEventListener('click', () => setupModal.classList.remove('active'));
+    }
+
+    // Export bots.json
+    const exportBtn = document.getElementById('exportBtn');
+    if(exportBtn){
+        exportBtn.addEventListener('click', async function(){
+            exportBtn.disabled = true;
+            exportBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Exporting...';
+            try {
+                const res = await fetch('/api/admin?action=export_bots', {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const d = await res.json();
+                if(d.success && Array.isArray(d.bots)){
+                    const blob = new Blob([JSON.stringify(d.bots, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'bots.json';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    showToast("bots.json downloaded! You can commit it to Git.");
+                } else {
+                    showToast("Failed to export bots", true);
+                }
+            } catch(e) {
+                showToast("Error exporting bots", true);
+            } finally {
+                exportBtn.disabled = false;
+                exportBtn.innerHTML = '<i class="fa-solid fa-download"></i> Export bots.json';
+            }
+        });
+    }
+
+    // Import bots.json Modal & Action
+    const importBtn = document.getElementById('importBtn');
+    const importModal = document.getElementById('importModal');
+    const closeImportModal = document.getElementById('closeImportModal');
+    const cancelImportBtn = document.getElementById('cancelImportBtn');
+    const submitImportBtn = document.getElementById('submitImportBtn');
+    const importJsonText = document.getElementById('importJsonText');
+
+    if(importBtn){
+        importBtn.addEventListener('click', () => {
+            importJsonText.value = '';
+            importModal.classList.add('active');
+        });
+    }
+    if(closeImportModal) closeImportModal.addEventListener('click', () => importModal.classList.remove('active'));
+    if(cancelImportBtn) cancelImportBtn.addEventListener('click', () => importModal.classList.remove('active'));
+
+    if(submitImportBtn){
+        submitImportBtn.addEventListener('click', async function(){
+            const text = importJsonText.value.trim();
+            if(!text){
+                showToast("Please paste JSON array first", true);
+                return;
+            }
+            let parsed;
+            try {
+                parsed = JSON.parse(text);
+                if(!Array.isArray(parsed)) throw new Error();
+            } catch(err){
+                showToast("Invalid JSON array format! Must be [ { uid, password, ... } ]", true);
+                return;
+            }
+
+            submitImportBtn.disabled = true;
+            submitImportBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Importing...';
+
+            try {
+                const res = await fetch('/api/admin?action=import_bots', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ importedBots: parsed })
+                });
+                const d = await res.json();
+                if(d.success){
+                    showToast(d.message || "Bots imported successfully!");
+                    importModal.classList.remove('active');
+                    loadBotList();
+                } else {
+                    showToast(d.message || "Failed to import bots", true);
+                }
+            } catch(e) {
+                showToast("Server connection error during import", true);
+            } finally {
+                submitImportBtn.disabled = false;
+                submitImportBtn.innerHTML = '<i class="fa-solid fa-check"></i> Import &amp; Save';
+            }
+        });
+    }
+
     async function loadBotList(){
-        botList.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-3);"><i class="fa-solid fa-spinner fa-spin"></i> Fetching active bots...</div>';
+        botList.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-3);"><i class="fa-solid fa-spinner fa-spin"></i> Fetching active bots & stats...</div>';
 
         try {
             const res = await fetch('/api/admin?action=list_bots', {
@@ -645,7 +976,7 @@
             }
             const data = await res.json();
             if(data.success && Array.isArray(data.bots)){
-                renderBots(data.bots, data.stats);
+                renderBots(data.bots, data.stats, data.storageStatus);
             } else {
                 botList.innerHTML = '<div style="text-align: center; padding: 30px; color: #ff4757;">Failed to load bots.</div>';
             }
@@ -654,7 +985,7 @@
         }
     }
 
-    function renderBots(bots, stats){
+    function renderBots(bots, stats, storageStatus){
         document.getElementById('statTotalBots').textContent = bots.length;
         document.getElementById('statActiveBots').textContent = bots.filter(b => b.status === 'active').length;
 
@@ -665,6 +996,25 @@
                 ? Math.round(((stats.todaySuccess || 0) / stats.todayRequests) * 100) 
                 : 100;
             document.getElementById('statSuccessRate').textContent = rate + '%';
+        }
+
+        // Render Storage Persistence Banner
+        const storageBanner = document.getElementById('storageBanner');
+        const storageBadge = document.getElementById('storageBadge');
+        const storageDesc = document.getElementById('storageDesc');
+
+        if(storageStatus && storageStatus.persistent){
+            storageBanner.className = 'storage-card persistent';
+            storageBadge.className = 'storage-badge badge-green';
+            storageBadge.innerHTML = '<i class="fa-solid fa-circle-check"></i> ' + storageStatus.provider;
+            storageDesc.innerHTML = '<strong>স্থায়ী ডাটাবেজ সক্রিয়:</strong> আপনার সব বট ও রিকোয়েস্ট কাউন্ট সম্পূর্ণ নিরাপদ এবং আজীবন স্থায়ী থাকবে।';
+            if(openSetupBtn) openSetupBtn.style.display = 'none';
+        } else {
+            storageBanner.className = 'storage-card ephemeral';
+            storageBadge.className = 'storage-badge badge-amber';
+            storageBadge.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Serverless Ephemeral (/tmp)';
+            storageDesc.innerHTML = '<strong>সাময়িক মেমোরি মোড:</strong> Vercel সার্ভারলেস কন্টেইনার স্লিপ হলে ডেটা রিসেট হতে পারে। স্থায়ী ক্লাউড ডাটাবেজ ফ্রিতে ১ ক্লিকে কানেক্ট করতে পাশে চাপুন।';
+            if(openSetupBtn) openSetupBtn.style.display = 'inline-flex';
         }
 
         if(bots.length === 0){
