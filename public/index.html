@@ -262,10 +262,55 @@
             <span>300s (5 Min Worldwide CDN)</span>
         </div>
     </div>
-    <div style="margin-top: 15px;">
-        <a href="/FreeFire_API_Documentation.pdf" download style="display: inline-flex; align-items: center; gap: 8px; background: #e11d48; color: #ffffff; padding: 8px 18px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 10pt; box-shadow: 0 2px 4px rgba(225,29,72,0.2);">
+    <div style="margin-top: 15px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+        <a href="/FreeFire_API_Documentation.pdf" download style="display: inline-flex; align-items: center; gap: 8px; background: #e11d48; color: #ffffff; padding: 9px 18px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 10pt; box-shadow: 0 2px 4px rgba(225,29,72,0.2);">
             📄 Download Official Documentation (PDF)
         </a>
+        <a href="https://my-ff-api-three.vercel.app/api/player-info?uid=3000391898" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; background: #2563eb; color: #ffffff; padding: 9px 18px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 10pt; box-shadow: 0 2px 4px rgba(37,99,235,0.2);">
+            ⚡ Open Live Working Test URL
+        </a>
+    </div>
+</div>
+
+<!-- Interactive Live API Playground -->
+<div style="background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; margin: 20px 0 28px 0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 16px;">⚡</span>
+            <strong style="font-size: 11pt; color: #0f172a;">Live API Test URL Generator</strong>
+        </div>
+        <span style="font-size: 8pt; font-weight: 700; background: #10b981; color: #fff; padding: 3px 8px; border-radius: 4px; text-transform: uppercase;">Direct Garena Live</span>
+    </div>
+
+    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px;">
+        <input type="text" id="playUid" value="3000391898" placeholder="Enter any Free Fire UID" style="flex: 1; min-width: 220px; padding: 10px 14px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-family: monospace; font-size: 10pt; outline: none;">
+        <select id="playRegion" style="padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 9.5pt; background: #fff; outline: none;">
+            <option value="BD">Region: BD (Bangladesh)</option>
+            <option value="IND">Region: IND (India)</option>
+            <option value="SG">Region: SG (Singapore)</option>
+            <option value="BR">Region: BR (Brazil)</option>
+            <option value="US">Region: US (United States)</option>
+        </select>
+        <button id="playBtn" style="background: #0f172a; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; font-size: 9.5pt; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+            <span>🚀 Run Test</span>
+        </button>
+    </div>
+
+    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+        <div style="font-size: 9pt; color: #64748b; font-family: monospace; word-break: break-all;">
+            <strong style="color: #059669;">GET</strong> <a id="playLink" href="https://my-ff-api-three.vercel.app/api/player-info?uid=3000391898" target="_blank" style="color: #2563eb; text-decoration: underline; font-weight: 600;">https://my-ff-api-three.vercel.app/api/player-info?uid=3000391898</a>
+        </div>
+        <a id="playOpenBtn" href="https://my-ff-api-three.vercel.app/api/player-info?uid=3000391898" target="_blank" style="font-size: 8.5pt; font-weight: 700; color: #2563eb; background: #eff6ff; padding: 4px 10px; border-radius: 6px; text-decoration: none; border: 1px solid #bfdbfe;">
+            Open URL ↗
+        </a>
+    </div>
+
+    <div id="playResultBox" style="margin-top: 14px; display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span style="font-size: 8.5pt; font-weight: 700; color: #475569;">RESPONSE OUTPUT:</span>
+            <span id="playStatus" style="font-size: 8pt; font-weight: 700; color: #059669; background: #dcfce7; padding: 2px 6px; border-radius: 4px;">200 OK</span>
+        </div>
+        <pre id="playPre" style="max-height: 280px; overflow-y: auto; background: #0f172a; color: #f8fafc; padding: 12px; border-radius: 8px; font-size: 8pt; line-height: 1.4; margin: 0;"></pre>
     </div>
 </div>
 
@@ -457,11 +502,62 @@ if (!empty($result['success'])) {
 ?&gt;</code></pre>
 
 <h2>৭. বট অ্যাকাউন্ট পরিবর্তন করার নিয়ম (Maintenance)</h2>
-<p>ভবিষ্যতে কখনো নতুন গেস্ট অ্যাকাউন্ট বসাতে চাইলে <code>ff-api/api/player-info.js</code> ফাইলের ৩ ও ৪ নম্বর লাইনে আপনার নতুন গেস্ট UID ও Password বসিয়ে GitHub-এ পুশ করলেই Vercel স্বয়ংক্রিয়ভাবে আপডেট হয়ে যাবে।</p>
+<script>
+(function(){
+    const playUid = document.getElementById('playUid');
+    const playRegion = document.getElementById('playRegion');
+    const playBtn = document.getElementById('playBtn');
+    const playLink = document.getElementById('playLink');
+    const playOpenBtn = document.getElementById('playOpenBtn');
+    const playResultBox = document.getElementById('playResultBox');
+    const playStatus = document.getElementById('playStatus');
+    const playPre = document.getElementById('playPre');
 
-<div class="footer-note">
-    Free Fire Player Info API &bull; Built with Node.js &amp; Vercel &bull; Document Generated on 2026-09-02
-</div>
+    function updateUrl(){
+        const uid = playUid.value.trim() || '3000391898';
+        const reg = playRegion.value;
+        const fullUrl = `https://my-ff-api-three.vercel.app/api/player-info?uid=${encodeURIComponent(uid)}` + (reg && reg !== 'AUTO' ? `&region=${encodeURIComponent(reg)}` : '');
+        playLink.textContent = fullUrl;
+        playLink.href = fullUrl;
+        playOpenBtn.href = fullUrl;
+    }
 
+    playUid.addEventListener('input', updateUrl);
+    playRegion.addEventListener('change', updateUrl);
+
+    playBtn.addEventListener('click', async function(){
+        const uid = playUid.value.trim();
+        if(!uid || !/^\d+$/.test(uid)){
+            alert("Please enter a valid numeric UID");
+            return;
+        }
+        playBtn.disabled = true;
+        playBtn.innerHTML = '<span>⏳ Fetching...</span>';
+        playResultBox.style.display = 'block';
+        playPre.textContent = 'Contacting Garena Live Game Gateway...';
+
+        try {
+            const reg = playRegion.value;
+            const url = `/api/player-info?uid=${encodeURIComponent(uid)}` + (reg && reg !== 'AUTO' ? `&region=${encodeURIComponent(reg)}` : '');
+            const res = await fetch(url);
+            const data = await res.json();
+            playStatus.textContent = `${res.status} ${res.ok ? 'OK' : 'ERROR'}`;
+            playStatus.style.background = res.ok ? '#dcfce7' : '#fee2e2';
+            playStatus.style.color = res.ok ? '#059669' : '#dc2626';
+            playPre.textContent = JSON.stringify(data, null, 2);
+        } catch(err){
+            playStatus.textContent = 'NETWORK ERROR';
+            playStatus.style.background = '#fee2e2';
+            playStatus.style.color = '#dc2626';
+            playPre.textContent = 'Failed to connect to API: ' + err.message;
+        } finally {
+            playBtn.disabled = false;
+            playBtn.innerHTML = '<span>🚀 Run Test</span>';
+        }
+    });
+
+    updateUrl();
+})();
+</script>
 </body>
 </html>
