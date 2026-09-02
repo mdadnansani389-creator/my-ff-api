@@ -74,7 +74,7 @@ GET https://my-ff-api-three.vercel.app/api/player-info?uid=YOUR_UID&region=BD
       "accountId": "YOUR_UID",
       "gender": "Gender_MALE",
       "language": "Language_CN_TRADITIONAL",
-      "signature": "[b][c][FF0000]know your place f.o.o.l",
+      "signature": "Hello! Welcome to my profile.",
       "rankShow": "RankShow_BR"
     },
     "PetInfo": {
@@ -133,21 +133,16 @@ GET https://my-ff-api-three.vercel.app/api/player-info?uid=YOUR_UID&region=BD
 
 ---
 
-## 🖼️ ৬. অ্যাভাটার ও ব্যানার ইমেজ ফেচ করার CDN লিঙ্ক
+## 🖼️ ৬. ইন-গেম আইটেম আইডি স্পেসিফিকেশন (Item IDs)
 
-আইডি থেকে সরাসরি গেমের আসল ছবি পেতে নিচের ফ্রি CDN ব্যবহার করুন:
+API সরাসরি গ্যারেনা গেম সার্ভার থেকে প্লেয়ারের ব্যবহৃত অফিসিয়াল সংখ্যাসূচক কসমেটিক ও আইটেম আইডি প্রদান করে:
 
-```http
-# অ্যাভাটার ছবির URL:
-https://cdn.jsdelivr.net/gh/TSun-FreeFire/TSun-FF-Avatar-And-Banners@main/icons/{EquippedAvatarId}.png
+| আইটেম ফিল্ড | ডেটা টাইপ | বিবরণ |
+| :--- | :--- | :--- |
+| `EquippedAvatarId` | `Integer` | প্লেয়ারের বর্তমান সক্রিয় ইন-গেম অ্যাভাটার আইকন আইডি (যেমন: `902050007`) |
+| `EquippedBannerId` | `Integer` | প্লেয়ারের বর্তমান প্রোফাইল ব্যানার ব্যাকগ্রাউন্ড আইডি (যেমন: `901042013`) |
+| `EquippedBPID` | `Integer` | প্লেয়ারের বর্তমান ব্যাটল পাস ব্যাজ আইডি (যেমন: `1001000100`) |
 
-# ব্যানার ছবির URL:
-https://cdn.jsdelivr.net/gh/TSun-FreeFire/TSun-FF-Avatar-And-Banners@main/icons/{EquippedBannerId}.png
-
-# ব্যাটল পাস ব্যাজের URL:
-https://cdn.jsdelivr.net/gh/TSun-FreeFire/TSun-FF-Avatar-And-Banners@main/icons/{EquippedBPID}.png
-```
-*উদাহরণ:* `https://cdn.jsdelivr.net/gh/TSun-FreeFire/TSun-FF-Avatar-And-Banners@main/icons/902050007.png`
 
 ---
 

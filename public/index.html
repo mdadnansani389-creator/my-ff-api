@@ -398,7 +398,7 @@
       "accountId": "YOUR_UID",
       "gender": "GENDERMALE",
       "language": "LANGUAGECNTRADITIONAL",
-      "signature": "[b][c][FF0000]know your place f.o.o.l",
+      "signature": "Hello! Welcome to my profile.",
       "rankShow": "RANKSHOWBR"
     },
     "CreditScoreInfo": {
@@ -443,24 +443,32 @@
 
 <div class="page-break"></div>
 
-<h2>৫. অ্যাভাটার ও ব্যানার ছবি ফেচ করার নিয়ম</h2>
-<p>API থেকে পাওয়া <code>EquippedAvatarId</code> বা <code>EquippedBannerId</code> দিয়ে সরাসরি গেমের আসল ছবি লোড করা যায়:</p>
+<h2>৫. ইন-গেম আইটেম আইডি স্পেসিফিকেশন (Item IDs)</h2>
+<p>API সরাসরি গ্যারেনা গেম সার্ভার থেকে প্লেয়ারের ব্যবহৃত অফিসিয়াল সংখ্যাসূচক কসমেটিক ও আইটেম আইডি প্রদান করে:</p>
 
 <table>
     <thead>
         <tr>
-            <th>আইটেম</th>
-            <th>CDN লিঙ্ক ফরম্যাট</th>
+            <th>আইটেম ফিল্ড</th>
+            <th>ডেটা টাইপ</th>
+            <th>বিবরণ</th>
         </tr>
     </thead>
     <tbody>
         <tr>
-            <td><strong>অরিজিনাল অ্যাভাটার</strong></td>
-            <td><code>https://cdn.jsdelivr.net/gh/TSun-FreeFire/TSun-FF-Avatar-And-Banners@main/icons/{AvatarId}.png</code></td>
+            <td><code>EquippedAvatarId</code></td>
+            <td>সংখ্যা (Integer)</td>
+            <td>প্লেয়ারের বর্তমান সক্রিয় ইন-গেম অ্যাভাটার আইকন আইডি (যেমন: <code>902050007</code>)।</td>
         </tr>
         <tr>
-            <td><strong>অরিজিনাল ব্যানার</strong></td>
-            <td><code>https://cdn.jsdelivr.net/gh/TSun-FreeFire/TSun-FF-Avatar-And-Banners@main/icons/{BannerId}.png</code></td>
+            <td><code>EquippedBannerId</code></td>
+            <td>সংখ্যা (Integer)</td>
+            <td>প্লেয়ারের বর্তমান প্রোফাইল ব্যানার ব্যাকগ্রাউন্ড আইডি (যেমন: <code>901042013</code>)।</td>
+        </tr>
+        <tr>
+            <td><code>EquippedBPID</code></td>
+            <td>সংখ্যা (Integer)</td>
+            <td>প্লেয়ারের বর্তমান ব্যাটল পাস ব্যাজ আইডি (যেমন: <code>1001000100</code>)।</td>
         </tr>
     </tbody>
 </table>
