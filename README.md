@@ -1,6 +1,6 @@
 # 🎮 Free Fire Player Info Custom API (Node.js & Vercel)
 
-[![Live API](https://img.shields.io/badge/API-Live%20on%20Vercel-success?style=for-the-badge&logo=vercel)](https://my-ff-api-three.vercel.app/api/player-info?uid=3000391898)
+[![Live API](https://img.shields.io/badge/API-Live%20on%20Vercel-success?style=for-the-badge&logo=vercel)](https://my-ff-api-three.vercel.app/api/player-info?uid=YOUR_UID)
 [![Node.js](https://img.shields.io/badge/Node.js-18%2B-green?style=for-the-badge&logo=node.js)](https://nodejs.org/)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
@@ -21,11 +21,11 @@ GET https://my-ff-api-three.vercel.app/api/player-info?uid=YOUR_UID&region=BD
 ## 🚀 কুইক স্টার্ট (Quick Start)
 
 ### ব্রাউজারে টেস্ট লিংক:
-[https://my-ff-api-three.vercel.app/api/player-info?uid=3000391898&region=BD](https://my-ff-api-three.vercel.app/api/player-info?uid=3000391898&region=BD)
+[https://my-ff-api-three.vercel.app/api/player-info?uid=YOUR_UID&region=BD](https://my-ff-api-three.vercel.app/api/player-info?uid=YOUR_UID&region=BD)
 
 ### JavaScript দিয়ে ডেটা ফেচ:
 ```javascript
-fetch("https://my-ff-api-three.vercel.app/api/player-info?uid=3000391898")
+fetch("https://my-ff-api-three.vercel.app/api/player-info?uid=YOUR_UID")
   .then(res => res.json())
   .then(data => console.log(data));
 ```
@@ -33,7 +33,7 @@ fetch("https://my-ff-api-three.vercel.app/api/player-info?uid=3000391898")
 ### Python দিয়ে ডেটা ফেচ:
 ```python
 import requests
-res = requests.get("https://my-ff-api-three.vercel.app/api/player-info?uid=3000391898")
+res = requests.get("https://my-ff-api-three.vercel.app/api/player-info?uid=YOUR_UID")
 print(res.json())
 ```
 

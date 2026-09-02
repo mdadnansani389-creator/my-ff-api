@@ -302,7 +302,7 @@
             <td>String / Number</td>
             <td><strong>হ্যাঁ</strong></td>
             <td>—</td>
-            <td>টার্গেট ফ্রি ফায়ার প্লেয়ারের ইন-গেম UID (যেমন: <code>3000391898</code>)</td>
+            <td>টার্গেট ফ্রি ফায়ার প্লেয়ারের ইন-গেম UID (যেমন: <code>YOUR_UID</code>)</td>
         </tr>
         <tr>
             <td><code>region</code></td>
@@ -323,7 +323,7 @@
   "success": true,
   "data": {
     "AccountInfo": {
-      "AccountName": "ᶜᵉᵒ〆FLEX™",
+      "AccountName": "Player_Nickname",
       "AccountLevel": 70,
       "AccountEXP": 2860195,
       "AccountRegion": "BD",
@@ -350,7 +350,7 @@
       "EquippedSkills": [ 211046056, 203046064, 204051038, 205000225, 214039008 ]
     },
     "SocialInfo": {
-      "accountId": "3000391898",
+      "accountId": "YOUR_UID",
       "gender": "GENDERMALE",
       "language": "LANGUAGECNTRADITIONAL",
       "signature": "[b][c][FF0000]know your place f.o.o.l",
@@ -423,7 +423,7 @@
 <h2>৬. ইন্টিগ্রেশন কোড উদাহরণ (Integration Code)</h2>
 
 <h3>JavaScript (Web / Node.js)</h3>
-<pre><code>const uid = "3000391898";
+<pre><code>const uid = "YOUR_UID";
 fetch(`https://my-ff-api-three.vercel.app/api/player-info?uid=${uid}`)
   .then(res => res.json())
   .then(json => {
@@ -437,7 +437,7 @@ fetch(`https://my-ff-api-three.vercel.app/api/player-info?uid=${uid}`)
 <h3>Python</h3>
 <pre><code>import requests
 
-url = "https://my-ff-api-three.vercel.app/api/player-info?uid=3000391898"
+url = "https://my-ff-api-three.vercel.app/api/player-info?uid=YOUR_UID"
 data = requests.get(url).json()
 
 if data.get("success"):
@@ -446,7 +446,7 @@ if data.get("success"):
 
 <h3>PHP</h3>
 <pre><code>&lt;?php
-$uid = "3000391898";
+$uid = "YOUR_UID";
 $url = "https://my-ff-api-three.vercel.app/api/player-info?uid=" . urlencode($uid);
 $response = file_get_contents($url);
 $result = json_decode($response, true);

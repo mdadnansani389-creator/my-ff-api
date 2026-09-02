@@ -20,7 +20,7 @@
 
 #### রিকোয়েস্ট URL উদাহরণ:
 ```http
-GET https://my-ff-api-three.vercel.app/api/player-info?uid=3000391898&region=BD
+GET https://my-ff-api-three.vercel.app/api/player-info?uid=YOUR_UID&region=BD
 ```
 
 ---
@@ -29,7 +29,7 @@ GET https://my-ff-api-three.vercel.app/api/player-info?uid=3000391898&region=BD
 
 | প্যারামিটার | টাইপ | আবশ্যক? | ডিফল্ট | বিবরণ |
 |:---|:---|:---:|:---:|:---|
-| `uid` বা `id` | `String` / `Number` | **হ্যাঁ** | — | প্লেয়ারের ইন-গেম সংখ্যাসূচক UID (যেমন: `3000391898`) |
+| `uid` বা `id` | `String` / `Number` | **হ্যাঁ** | — | প্লেয়ারের ইন-গেম সংখ্যাসূচক UID (যেমন: `YOUR_UID`) |
 | `region` | `String` | না | `BD` | প্লেয়ারের গেম রিজিয়ন (যেমন: `BD`, `IND`, `SG`, `ID`, `ME`, `BR`, `US`) |
 
 ---
@@ -42,7 +42,7 @@ GET https://my-ff-api-three.vercel.app/api/player-info?uid=3000391898&region=BD
   "source": "cloud_edge_gateway",
   "data": {
     "AccountInfo": {
-      "AccountName": "ᶜᵉᵒ〆FLEX™",
+      "AccountName": "Player_Nickname",
       "AccountLevel": 70,
       "AccountEXP": 2860195,
       "AccountRegion": "BD",
@@ -71,7 +71,7 @@ GET https://my-ff-api-three.vercel.app/api/player-info?uid=3000391898&region=BD
       "EquippedSkills": [16, 4804, 8, 1, 16, 1003, 8, 2, 16, 5206, 8, 3, 16, 6201]
     },
     "SocialInfo": {
-      "accountId": "3000391898",
+      "accountId": "YOUR_UID",
       "gender": "Gender_MALE",
       "language": "Language_CN_TRADITIONAL",
       "signature": "[b][c][FF0000]know your place f.o.o.l",
@@ -155,7 +155,7 @@ https://cdn.jsdelivr.net/gh/TSun-FreeFire/TSun-FF-Avatar-And-Banners@main/icons/
 
 ### JavaScript (Fetch API)
 ```javascript
-const uid = "3000391898";
+const uid = "YOUR_UID";
 const apiUrl = `https://my-ff-api-three.vercel.app/api/player-info?uid=${uid}&region=BD`;
 
 fetch(apiUrl)
@@ -177,7 +177,7 @@ fetch(apiUrl)
 ```python
 import requests
 
-uid = "3000391898"
+uid = "YOUR_UID"
 url = f"https://my-ff-api-three.vercel.app/api/player-info?uid={uid}&region=BD"
 
 response = requests.get(url, timeout=10)
@@ -195,7 +195,7 @@ else:
 ### PHP (cURL)
 ```php
 <?php
-$uid = "3000391898";
+$uid = "YOUR_UID";
 $url = "https://my-ff-api-three.vercel.app/api/player-info?uid=" . urlencode($uid) . "&region=BD";
 
 $ch = curl_init();
@@ -215,7 +215,7 @@ if (!empty($data['success'])) {
 
 ### cURL (Terminal / Command Prompt)
 ```bash
-curl -X GET "https://my-ff-api-three.vercel.app/api/player-info?uid=3000391898&region=BD"
+curl -X GET "https://my-ff-api-three.vercel.app/api/player-info?uid=YOUR_UID&region=BD"
 ```
 
 ---

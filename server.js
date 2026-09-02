@@ -23,5 +23,5 @@ app.get('/', (req, res) => {
 
 app.listen(PORT, () => {
     console.log(`[+] Free Fire Custom API is running at: http://localhost:${PORT}`);
-    console.log(`[i] Test link: http://localhost:${PORT}/api/player-info?uid=3000391898`);
+    console.log(`[i] Test link: http://localhost:${PORT}/api/player-info?uid=YOUR_UID`);
 });
