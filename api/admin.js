@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
+const { getStats } = require('../lib/stats');
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "ffmax69";
 const BOTS_FILE = path.join(process.cwd(), 'bots.json');
@@ -136,7 +137,8 @@ module.exports = async (req, res) => {
             status: b.status || 'active',
             addedAt: b.addedAt
         }));
-        return res.status(200).json({ success: true, bots: safeBots });
+        const stats = getStats();
+        return res.status(200).json({ success: true, bots: safeBots, stats });
     }
 
     // Action 3: Test Bot Connection

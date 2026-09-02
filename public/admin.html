@@ -495,6 +495,27 @@
     <!-- Stat Cards -->
     <div class="grid-top">
         <div class="stat-card">
+            <div class="stat-icon" style="color: #ec4899; background: rgba(236, 72, 153, 0.15);"><i class="fa-solid fa-chart-line"></i></div>
+            <div class="stat-info">
+                <div class="value" id="statTodayRequests" style="color: #f472b6;">0</div>
+                <div class="label">Today's Requests (আজকের রিকোয়েস্ট)</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="color: #8b5cf6; background: rgba(139, 92, 246, 0.15);"><i class="fa-solid fa-bolt"></i></div>
+            <div class="stat-info">
+                <div class="value" id="statTotalRequests">0</div>
+                <div class="label">Total Lifetime Hits</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="color: #06b6d4; background: rgba(6, 182, 212, 0.15);"><i class="fa-solid fa-circle-check"></i></div>
+            <div class="stat-info">
+                <div class="value" id="statSuccessRate">100%</div>
+                <div class="label">Success Rate Today</div>
+            </div>
+        </div>
+        <div class="stat-card">
             <div class="stat-icon" style="color: #3b82f6;"><i class="fa-solid fa-robot"></i></div>
             <div class="stat-info">
                 <div class="value" id="statTotalBots">0</div>
@@ -502,17 +523,10 @@
             </div>
         </div>
         <div class="stat-card">
-            <div class="stat-icon" style="color: #10b981;"><i class="fa-solid fa-circle-check"></i></div>
+            <div class="stat-icon" style="color: #10b981;"><i class="fa-solid fa-shield-cat"></i></div>
             <div class="stat-info">
                 <div class="value" id="statActiveBots">0</div>
-                <div class="label">Active &amp; Ready</div>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon" style="color: #f59e0b;"><i class="fa-solid fa-shield-cat"></i></div>
-            <div class="stat-info">
-                <div class="value">Direct Garena</div>
-                <div class="label">Official Game Gateway</div>
+                <div class="label">Active &amp; Ready Bots</div>
             </div>
         </div>
     </div>
@@ -631,7 +645,7 @@
             }
             const data = await res.json();
             if(data.success && Array.isArray(data.bots)){
-                renderBots(data.bots);
+                renderBots(data.bots, data.stats);
             } else {
                 botList.innerHTML = '<div style="text-align: center; padding: 30px; color: #ff4757;">Failed to load bots.</div>';
             }
@@ -640,9 +654,18 @@
         }
     }
 
-    function renderBots(bots){
+    function renderBots(bots, stats){
         document.getElementById('statTotalBots').textContent = bots.length;
         document.getElementById('statActiveBots').textContent = bots.filter(b => b.status === 'active').length;
+
+        if(stats){
+            document.getElementById('statTodayRequests').textContent = stats.todayRequests || 0;
+            document.getElementById('statTotalRequests').textContent = stats.totalRequests || 0;
+            const rate = stats.todayRequests > 0 
+                ? Math.round(((stats.todaySuccess || 0) / stats.todayRequests) * 100) 
+                : 100;
+            document.getElementById('statSuccessRate').textContent = rate + '%';
+        }
 
         if(bots.length === 0){
             botList.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-3);">No bots registered in the pool yet. Add one above.</div>';

@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const FreeFireAPI = require('@pure0cd/freefire-api');
+const { recordRequest } = require('../lib/stats');
 
 const BOTS_FILE = path.join(process.cwd(), 'bots.json');
 
@@ -100,6 +101,7 @@ module.exports = async (req, res) => {
         }
 
         if (!profile || !profile.basicinfo) {
+            recordRequest(false);
             return res.status(404).json({
                 success: false,
                 message: 'Player not found on Garena official game servers.'
@@ -200,6 +202,9 @@ module.exports = async (req, res) => {
             BattleStats: stats || null
         };
 
+        // Record successful request in analytics
+        recordRequest(true);
+
         // Cache response for 5 minutes (300s) on Vercel CDN
         res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
 
@@ -209,6 +214,7 @@ module.exports = async (req, res) => {
         });
 
     } catch (error) {
+        recordRequest(false);
         console.error("Garena Gateway Pool Error:", error);
         return res.status(500).json({
             success: false,
