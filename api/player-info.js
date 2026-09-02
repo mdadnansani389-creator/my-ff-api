@@ -1,27 +1,52 @@
+const fs = require('fs');
+const path = require('path');
 const FreeFireAPI = require('@pure0cd/freefire-api');
 
-// Your Official Garena Guest Bot Account Credentials
-const BOT_UID = process.env.BOT_UID || "7403290144";
-const BOT_PASSWORD = process.env.BOT_PASSWORD || "10FA10F1D5D1694D64518D7F6CB8CE92720C5F34B33BAC77E2C440ADE6977913";
+const BOTS_FILE = path.join(process.cwd(), 'bots.json');
 
-let ffClient = null;
-let lastLoginTime = 0;
-const SESSION_TTL = 1000 * 60 * 60 * 6; // 6 hours session cache
+const DEFAULT_BOTS = [
+    {
+        id: "bot_1",
+        uid: process.env.BOT_UID || "7403290144",
+        password: process.env.BOT_PASSWORD || "10FA10F1D5D1694D64518D7F6CB8CE92720C5F34B33BAC77E2C440ADE6977913",
+        status: "active"
+    }
+];
+
+function getActiveBots() {
+    try {
+        if (fs.existsSync(BOTS_FILE)) {
+            const data = JSON.parse(fs.readFileSync(BOTS_FILE, 'utf-8'));
+            if (Array.isArray(data) && data.length > 0) {
+                const active = data.filter(b => b.status !== 'disabled');
+                if (active.length > 0) return active;
+            }
+        }
+    } catch (e) {
+        console.error("Error loading bots.json:", e.message);
+    }
+    return DEFAULT_BOTS;
+}
+
+// Client pool cache: botUid -> { client, lastLogin }
+const clientPool = new Map();
+let roundRobinIndex = 0;
 
 /**
- * Connect and authenticate directly with Garena Official Game Gateway
+ * Get or authenticate a client for a specific bot
  */
-async function getClient() {
+async function getClientForBot(bot) {
     const now = Date.now();
-    if (!ffClient || now - lastLoginTime > SESSION_TTL) {
-        console.log("[i] Authenticating directly with Garena Game Server...");
+    let entry = clientPool.get(bot.uid);
+    if (!entry || now - entry.lastLogin > 1000 * 60 * 60 * 6) {
+        console.log(`[i] Authenticating Bot (${bot.uid}) directly with Garena...`);
         const client = new FreeFireAPI();
-        await client.login(BOT_UID, BOT_PASSWORD);
-        ffClient = client;
-        lastLoginTime = Date.now();
-        console.log("[+] Logged into Garena successfully! Server URL:", client.session.serverUrl);
+        await client.login(bot.uid, bot.password);
+        entry = { client, lastLogin: Date.now() };
+        clientPool.set(bot.uid, entry);
+        console.log(`[+] Bot (${bot.uid}) logged in successfully!`);
     }
-    return ffClient;
+    return entry.client;
 }
 
 module.exports = async (req, res) => {
@@ -51,18 +76,27 @@ module.exports = async (req, res) => {
     const cleanUid = String(uid).trim();
 
     try {
-        const client = await getClient();
+        const bots = getActiveBots();
+        let profile = null;
+        let successfulClient = null;
+        let lastError = null;
 
-        // 1. Fetch direct profile from Garena
-        let profile;
-        try {
-            profile = await client.getPlayerProfile(cleanUid);
-        } catch (err) {
-            // If token expired, reset session and retry once
-            console.warn("[!] Garena session expired or request failed, re-logging in:", err.message);
-            ffClient = null;
-            const freshClient = await getClient();
-            profile = await freshClient.getPlayerProfile(cleanUid);
+        // Round-Robin with Automatic Failover through the bot pool
+        const startIndex = (roundRobinIndex++) % bots.length;
+        for (let i = 0; i < bots.length; i++) {
+            const bot = bots[(startIndex + i) % bots.length];
+            try {
+                const client = await getClientForBot(bot);
+                profile = await client.getPlayerProfile(cleanUid);
+                if (profile && profile.basicinfo) {
+                    successfulClient = client;
+                    break;
+                }
+            } catch (err) {
+                console.warn(`[!] Bot (${bot.uid}) request failed, trying next bot:`, err.message);
+                lastError = err;
+                clientPool.delete(bot.uid); // Reset cache for failing bot
+            }
         }
 
         if (!profile || !profile.basicinfo) {
@@ -72,17 +106,19 @@ module.exports = async (req, res) => {
             });
         }
 
-        // 2. Fetch equipped items and battle stats
+        // Fetch equipped items and battle stats via the successful client
         let items = null;
         let stats = null;
-        try {
-            const [itemsRes, statsRes] = await Promise.allSettled([
-                client.getPlayerItems(cleanUid),
-                client.getPlayerStats(cleanUid)
-            ]);
-            if (itemsRes.status === 'fulfilled') items = itemsRes.value;
-            if (statsRes.status === 'fulfilled') stats = statsRes.value;
-        } catch (e) {}
+        if (successfulClient) {
+            try {
+                const [itemsRes, statsRes] = await Promise.allSettled([
+                    successfulClient.getPlayerItems(cleanUid),
+                    successfulClient.getPlayerStats(cleanUid)
+                ]);
+                if (itemsRes.status === 'fulfilled') items = itemsRes.value;
+                if (statsRes.status === 'fulfilled') stats = statsRes.value;
+            } catch (e) {}
+        }
 
         const b = profile.basicinfo || {};
         const s = profile.socialinfo || {};
@@ -92,7 +128,6 @@ module.exports = async (req, res) => {
         const epList = profile.historyepinfo || profile.eplist || [];
         const latestEp = epList.length > 0 ? epList[0] : {};
 
-        // Extract equipped cosmetic IDs from items if available
         let outfitIds = [];
         let weaponIds = [];
         let skillIds = [];
@@ -108,7 +143,6 @@ module.exports = async (req, res) => {
             skillIds = profile.profileinfo.equipedskills;
         }
 
-        // Format standardized payload (100% Garena Official Data)
         const formattedData = {
             AccountInfo: {
                 AccountName: b.nickname || 'Unknown Player',
@@ -140,7 +174,7 @@ module.exports = async (req, res) => {
             SocialInfo: {
                 accountId: String(cleanUid),
                 gender: s.gender || 'GENDERMALE',
-                language: s.language || 'LANGUAGEDEFAULT',
+                language: s.language || 'LANGUAGECNTRADITIONAL',
                 signature: s.signature || null,
                 rankShow: s.rankshow || 'RANKSHOWBR'
             },
@@ -175,7 +209,7 @@ module.exports = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Garena Direct Gateway Error:", error);
+        console.error("Garena Gateway Pool Error:", error);
         return res.status(500).json({
             success: false,
             message: 'Unable to fetch player profile at this moment.'

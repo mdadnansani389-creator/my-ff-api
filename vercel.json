@@ -6,15 +6,27 @@
       "dest": "/api/player-info.js"
     },
     {
+      "src": "/api/admin",
+      "dest": "/api/admin.js"
+    },
+    {
+      "src": "/admin",
+      "dest": "/public/admin.html"
+    },
+    {
+      "src": "/admin.html",
+      "dest": "/public/admin.html"
+    },
+    {
       "src": "/FreeFire_API_Documentation.pdf",
-      "dest": "/FreeFire_API_Documentation.pdf"
+      "dest": "/public/FreeFire_API_Documentation.pdf"
     },
     {
       "handle": "filesystem"
     },
     {
       "src": "/",
-      "dest": "/index.html"
+      "dest": "/public/index.html"
     }
   ]
 }

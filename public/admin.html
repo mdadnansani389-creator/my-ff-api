@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bot Pool Manager | Private Admin Dashboard</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap');
+
+    :root {
+        --bg-main: #090d16;
+        --card-bg: rgba(255, 255, 255, 0.03);
+        --card-border: rgba(255, 255, 255, 0.08);
+        --accent: #ff4757;
+        --accent-glow: rgba(255, 71, 87, 0.35);
+        --accent-green: #2ed573;
+        --accent-green-glow: rgba(46, 213, 115, 0.25);
+        --text-1: #f1f2f6;
+        --text-2: #a4b0be;
+        --text-3: #57606f;
+        --font-main: 'Plus Jakarta Sans', sans-serif;
+        --font-mono: 'Fira Code', monospace;
+    }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        background: var(--bg-main);
+        color: var(--text-1);
+        font-family: var(--font-main);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        background-image: 
+            radial-gradient(circle at 10% 20%, rgba(255, 71, 87, 0.08) 0%, transparent 40%),
+            radial-gradient(circle at 90% 80%, rgba(46, 213, 115, 0.05) 0%, transparent 40%);
+        background-attachment: fixed;
+    }
+
+    /* Auth Screen */
+    #authOverlay {
+        position: fixed;
+        inset: 0;
+        background: #090d16;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 999;
+        padding: 20px;
+    }
+
+    .auth-card {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--card-border);
+        border-radius: 20px;
+        padding: 40px;
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+
+    .auth-icon {
+        width: 65px;
+        height: 65px;
+        background: rgba(255, 71, 87, 0.15);
+        color: var(--accent);
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+        margin-bottom: 20px;
+        border: 1px solid rgba(255, 71, 87, 0.3);
+    }
+
+    .auth-card h2 {
+        font-size: 22px;
+        font-weight: 800;
+        margin-bottom: 8px;
+    }
+
+    .auth-card p {
+        color: var(--text-2);
+        font-size: 13px;
+        margin-bottom: 24px;
+    }
+
+    .input-wrap {
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+    .input-wrap i {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-3);
+    }
+
+    input[type="password"], input[type="text"] {
+        width: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid var(--card-border);
+        border-radius: 12px;
+        padding: 14px 16px 14px 44px;
+        color: #fff;
+        font-size: 14px;
+        font-family: inherit;
+        outline: none;
+        transition: all 0.25s ease;
+    }
+
+    input[type="password"]:focus, input[type="text"]:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .btn-submit {
+        width: 100%;
+        background: linear-gradient(135deg, #ff4757, #ff6b81);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 14px;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: all 0.25s ease;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px var(--accent-glow);
+    }
+
+    /* Main App Layout */
+    .app-header {
+        border-bottom: 1px solid var(--card-border);
+        padding: 16px 32px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: rgba(9, 13, 22, 0.8);
+        backdrop-filter: blur(15px);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    .logo-area {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .logo-badge {
+        background: var(--accent);
+        color: #fff;
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 18px;
+    }
+
+    .logo-text h1 {
+        font-size: 17px;
+        font-weight: 800;
+        letter-spacing: -0.3px;
+    }
+
+    .logo-text span {
+        font-size: 11px;
+        color: var(--text-2);
+    }
+
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .btn-logout {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-2);
+        border: 1px solid var(--card-border);
+        border-radius: 10px;
+        padding: 8px 16px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-logout:hover {
+        background: rgba(255, 71, 87, 0.15);
+        color: var(--accent);
+        border-color: rgba(255, 71, 87, 0.3);
+    }
+
+    .container {
+        max-width: 1100px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 32px 20px;
+        flex: 1;
+    }
+
+    .grid-top {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 20px;
+        margin-bottom: 28px;
+    }
+
+    .stat-card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 16px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+    }
+
+    .stat-info .value {
+        font-size: 24px;
+        font-weight: 800;
+    }
+
+    .stat-info .label {
+        font-size: 12px;
+        color: var(--text-2);
+    }
+
+    .section-card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 20px;
+        padding: 26px;
+        margin-bottom: 28px;
+        backdrop-filter: blur(10px);
+    }
+
+    .section-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .section-head h2 {
+        font-size: 18px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* Add Bot Form */
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 2fr 1fr auto;
+        gap: 12px;
+        align-items: center;
+    }
+
+    @media (max-width: 800px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .form-grid input {
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid var(--card-border);
+        border-radius: 12px;
+        padding: 12px 16px;
+        color: #fff;
+        font-size: 13px;
+        font-family: var(--font-mono);
+        outline: none;
+    }
+
+    .btn-add {
+        background: var(--accent-green);
+        color: #090d16;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 20px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        white-space: nowrap;
+        transition: all 0.2s;
+    }
+
+    .btn-add:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px var(--accent-green-glow);
+    }
+
+    /* Bot Table */
+    .bot-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .bot-item {
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--card-border);
+        border-radius: 14px;
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        transition: all 0.2s;
+    }
+
+    .bot-item:hover {
+        border-color: rgba(255, 255, 255, 0.15);
+        background: rgba(0, 0, 0, 0.45);
+    }
+
+    .bot-left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .bot-status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--accent-green);
+        box-shadow: 0 0 10px var(--accent-green);
+    }
+
+    .bot-name {
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 2px;
+    }
+
+    .bot-uid {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--text-2);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .bot-pass {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--text-3);
+    }
+
+    .bot-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-action {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--card-border);
+        color: var(--text-2);
+        border-radius: 8px;
+        padding: 8px 14px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s;
+    }
+
+    .btn-action:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-action.delete:hover {
+        color: var(--accent);
+        background: rgba(255, 71, 87, 0.15);
+        border-color: rgba(255, 71, 87, 0.3);
+    }
+
+    /* Toast */
+    #toast {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: #1e293b;
+        color: #fff;
+        border: 1px solid var(--card-border);
+        padding: 14px 20px;
+        border-radius: 12px;
+        font-size: 13px;
+        display: none;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        z-index: 1000;
+    }
+
+    #toast.show {
+        display: flex;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+</head>
+<body>
+
+<!-- Authentication Overlay -->
+<div id="authOverlay">
+    <div class="auth-card">
+        <div class="auth-icon">
+            <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <h2>Private Admin Access</h2>
+        <p>Enter Master Security Password to manage bot accounts</p>
+        <form id="loginForm">
+            <div class="input-wrap">
+                <i class="fa-solid fa-lock"></i>
+                <input type="password" id="adminPassword" placeholder="Master Password" required autofocus autocomplete="current-password">
+            </div>
+            <button type="submit" class="btn-submit" id="loginBtn">
+                <span>Unlock Dashboard</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Main Header -->
+<header class="app-header">
+    <div class="logo-area">
+        <div class="logo-badge"><i class="fa-solid fa-robot"></i></div>
+        <div class="logo-text">
+            <h1>Free Fire Bot Manager</h1>
+            <span>Multi-Bot Load Balancer &amp; Failover Pool</span>
+        </div>
+    </div>
+    <div class="header-actions">
+        <a href="/" target="_blank" class="btn-action">
+            <i class="fa-solid fa-book"></i> Docs
+        </a>
+        <button class="btn-logout" id="logoutBtn">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+        </button>
+    </div>
+</header>
+
+<main class="container">
+    <!-- Stat Cards -->
+    <div class="grid-top">
+        <div class="stat-card">
+            <div class="stat-icon" style="color: #3b82f6;"><i class="fa-solid fa-robot"></i></div>
+            <div class="stat-info">
+                <div class="value" id="statTotalBots">0</div>
+                <div class="label">Total Bots in Pool</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="color: #10b981;"><i class="fa-solid fa-circle-check"></i></div>
+            <div class="stat-info">
+                <div class="value" id="statActiveBots">0</div>
+                <div class="label">Active &amp; Ready</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="color: #f59e0b;"><i class="fa-solid fa-shield-cat"></i></div>
+            <div class="stat-info">
+                <div class="value">Direct Garena</div>
+                <div class="label">Official Game Gateway</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Bot Section -->
+    <div class="section-card">
+        <div class="section-head">
+            <h2><i class="fa-solid fa-plus-circle" style="color: var(--accent-green);"></i> Add New Bot Account</h2>
+        </div>
+        <form id="addBotForm">
+            <div class="form-grid">
+                <input type="text" id="botUid" placeholder="Guest UID (e.g. 7403290144)" required>
+                <input type="text" id="botPassword" placeholder="64-char Hex Password" required>
+                <input type="text" id="botLabel" placeholder="Label (e.g. Backup Bot 2)">
+                <button type="submit" class="btn-add" id="addBtn">
+                    <i class="fa-solid fa-check"></i> Verify &amp; Add Bot
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Active Bot Pool List -->
+    <div class="section-card">
+        <div class="section-head">
+            <h2><i class="fa-solid fa-server" style="color: #3b82f6;"></i> Registered Bot Accounts Pool</h2>
+            <button class="btn-action" id="refreshBtn">
+                <i class="fa-solid fa-rotate"></i> Refresh
+            </button>
+        </div>
+
+        <div class="bot-list" id="botList">
+            <!-- Rendered dynamically -->
+            <div style="text-align: center; padding: 40px; color: var(--text-3);">
+                <i class="fa-solid fa-spinner fa-spin"></i> Loading bot pool...
+            </div>
+        </div>
+    </div>
+</main>
+
+<div id="toast"></div>
+
+<script>
+(function(){
+    let authToken = localStorage.getItem('ff_admin_token') || '';
+
+    const authOverlay = document.getElementById('authOverlay');
+    const loginForm = document.getElementById('loginForm');
+    const adminPassword = document.getElementById('adminPassword');
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const botList = document.getElementById('botList');
+    const addBotForm = document.getElementById('addBotForm');
+    const refreshBtn = document.getElementById('refreshBtn');
+
+    function showToast(msg, isError = false){
+        const t = document.getElementById('toast');
+        t.innerHTML = (isError ? '<i class="fa-solid fa-circle-exclamation" style="color:#ff4757"></i> ' : '<i class="fa-solid fa-circle-check" style="color:#2ed573"></i> ') + msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3500);
+    }
+
+    // Check if existing token is valid
+    if(authToken){
+        authOverlay.style.display = 'none';
+        loadBotList();
+    }
+
+    loginForm.addEventListener('submit', async function(e){
+        e.preventDefault();
+        loginBtn.disabled = true;
+        loginBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Checking...';
+
+        try {
+            const res = await fetch('/api/admin?action=login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: adminPassword.value.trim() })
+            });
+            const data = await res.json();
+            if(data.success && data.token){
+                authToken = data.token;
+                localStorage.setItem('ff_admin_token', authToken);
+                authOverlay.style.display = 'none';
+                showToast("Welcome back, Admin!");
+                loadBotList();
+            } else {
+                showToast(data.message || "Invalid password", true);
+            }
+        } catch(err) {
+            showToast("Server connection error", true);
+        } finally {
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = '<span>Unlock Dashboard</span> <i class="fa-solid fa-arrow-right"></i>';
+        }
+    });
+
+    logoutBtn.addEventListener('click', function(){
+        localStorage.removeItem('ff_admin_token');
+        authToken = '';
+        authOverlay.style.display = 'flex';
+        adminPassword.value = '';
+    });
+
+    refreshBtn.addEventListener('click', loadBotList);
+
+    async function loadBotList(){
+        botList.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-3);"><i class="fa-solid fa-spinner fa-spin"></i> Fetching active bots...</div>';
+
+        try {
+            const res = await fetch('/api/admin?action=list_bots', {
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            });
+            if(res.status === 401){
+                logoutBtn.click();
+                return;
+            }
+            const data = await res.json();
+            if(data.success && Array.isArray(data.bots)){
+                renderBots(data.bots);
+            } else {
+                botList.innerHTML = '<div style="text-align: center; padding: 30px; color: #ff4757;">Failed to load bots.</div>';
+            }
+        } catch(e){
+            botList.innerHTML = '<div style="text-align: center; padding: 30px; color: #ff4757;">Network error while loading bots.</div>';
+        }
+    }
+
+    function renderBots(bots){
+        document.getElementById('statTotalBots').textContent = bots.length;
+        document.getElementById('statActiveBots').textContent = bots.filter(b => b.status === 'active').length;
+
+        if(bots.length === 0){
+            botList.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-3);">No bots registered in the pool yet. Add one above.</div>';
+            return;
+        }
+
+        botList.innerHTML = bots.map(b => `
+            <div class="bot-item">
+                <div class="bot-left">
+                    <div class="bot-status-dot" style="${b.status === 'active' ? '' : 'background: #747d8c; box-shadow: none;'}"></div>
+                    <div>
+                        <div class="bot-name">${b.label || 'Guest Bot'}</div>
+                        <div class="bot-uid">
+                            <i class="fa-solid fa-id-badge"></i>
+                            <strong>${b.uid}</strong>
+                            <span class="bot-pass">(${b.passwordMasked})</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bot-actions">
+                    <button class="btn-action test-btn" data-uid="${b.uid}" title="Test authentication with Garena">
+                        <i class="fa-solid fa-bolt"></i> Test
+                    </button>
+                    <button class="btn-action delete delete-btn" data-id="${b.id}" data-uid="${b.uid}" title="Remove bot">
+                        <i class="fa-solid fa-trash-can"></i> Remove
+                    </button>
+                </div>
+            </div>
+        `).join('');
+
+        // Attach action handlers
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', async function(){
+                const id = this.getAttribute('data-id');
+                const uid = this.getAttribute('data-uid');
+                if(!confirm(`Are you sure you want to remove Bot (UID: ${uid}) from the pool?`)) return;
+
+                try {
+                    const res = await fetch('/api/admin?action=delete_bot', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${authToken}`
+                        },
+                        body: JSON.stringify({ id })
+                    });
+                    const d = await res.json();
+                    if(d.success){
+                        showToast("Bot removed successfully");
+                        loadBotList();
+                    } else {
+                        showToast(d.message || "Failed to delete bot", true);
+                    }
+                } catch(e) {
+                    showToast("Error deleting bot", true);
+                }
+            });
+        });
+    }
+
+    addBotForm.addEventListener('submit', async function(e){
+        e.preventDefault();
+        const uid = document.getElementById('botUid').value.trim();
+        const password = document.getElementById('botPassword').value.trim();
+        const label = document.getElementById('botLabel').value.trim();
+        const addBtn = document.getElementById('addBtn');
+
+        addBtn.disabled = true;
+        addBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verifying with Garena...';
+
+        try {
+            const res = await fetch('/api/admin?action=add_bot', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
+                },
+                body: JSON.stringify({ uid, password, label })
+            });
+            const d = await res.json();
+            if(d.success){
+                showToast(d.message || "Bot added to pool successfully!");
+                addBotForm.reset();
+                loadBotList();
+            } else {
+                showToast(d.message || "Failed to add bot", true);
+            }
+        } catch(err) {
+            showToast("Error connecting to server", true);
+        } finally {
+            addBtn.disabled = false;
+            addBtn.innerHTML = '<i class="fa-solid fa-check"></i> Verify &amp; Add Bot';
+        }
+    });
+})();
+</script>
+</body>
+</html>
