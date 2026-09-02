@@ -148,7 +148,6 @@ module.exports = async (req, res) => {
         const nowSec = Math.floor(Date.now() / 1000);
         const lastLoginSec = b.lastloginat ? Number(b.lastloginat) : 0;
         const diffSeconds = lastLoginSec > 0 ? (nowSec - lastLoginSec) : null;
-        const isOnline = diffSeconds !== null && diffSeconds >= 0 && diffSeconds <= 900;
 
         const formattedData = {
             AccountInfo: {
@@ -159,7 +158,6 @@ module.exports = async (req, res) => {
                 AccountLikes: b.liked || 0,
                 AccountCreateTime: b.createat ? String(b.createat) : null,
                 AccountLastLogin: b.lastloginat ? String(b.lastloginat) : null,
-                IsOnline: isOnline,
                 LastLoginDiffSeconds: diffSeconds,
                 AccountSeasonId: null
             },
